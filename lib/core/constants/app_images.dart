@@ -7,5 +7,7 @@ class AppImages {
   static const String searchSvg = 'assets/icons/search.svg';
   static const String clothes1 = 'assets/images/clothes1.png';
   static const String clothes2 = 'assets/images/clothes2.png';
-  
+  static const String product = 'assets/images/download.jpg';
+  static const String product1 = 'assets/images/download (1).jpg';
+  static const String product2 = 'assets/images/download (2).jpg';
 }
