@@ -90,20 +90,18 @@ class ProductGrideScreen extends StatelessWidget {
 
       body: Padding(
         padding: AppConstants.badding16,
-        child: Expanded(
-          child: GridView.builder(
-            itemCount: products.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              // childAspectRatio: 0.8,
-            ),
-            itemBuilder: (context, index) {
-              var item = products[index];
-              return ProductCard(item: item);
-            },
+        child: GridView.builder(
+          itemCount: products.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 20,
+            crossAxisSpacing: 20,
+            // childAspectRatio: 0.8,
           ),
+          itemBuilder: (context, index) {
+            var item = products[index];
+            return ProductCard(item: item);
+          },
         ),
       ),
     );

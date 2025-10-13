@@ -1,9 +1,8 @@
-import 'package:bisky_shop/cubit/bottom_nav_cubit.dart';
+import 'package:bisky_shop/core/routes/navigation.dart';
+import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/widget/custom_text_field_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class PersonScreen extends StatelessWidget {
   final String name;
@@ -70,10 +69,20 @@ class PersonScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: CustomTextFieldButton(
+              text: 'order',
+              icon: Icons.shopping_bag,
+              onTap: () {
+                pushTo(context, Routs.order);
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: CustomTextFieldButton(
               text: 'setting',
               icon: Icons.settings,
               onTap: () {
-                context.go('/settings');
+                pushTo(context, Routs.settings);
               },
             ),
           ),
@@ -90,14 +99,6 @@ class PersonScreen extends StatelessWidget {
             child: CustomTextFieldButton(
               text: 'favorit',
               icon: Icons.favorite,
-              onTap: () {},
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: CustomTextFieldButton(
-              text: 'help',
-              icon: Icons.help,
               onTap: () {},
             ),
           ),
@@ -119,36 +120,6 @@ class PersonScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BlocBuilder<BottomNavCubit, int>(
-        builder: (context, index) {
-          return BottomNavigationBar(
-            currentIndex: index,
-            onTap: (selectedIndex) {
-              context.read<BottomNavCubit>().setIndex(selectedIndex);
-              if (selectedIndex == 0) {
-                context.go('/');
-              }
-              // يمكنك إضافة باقي التنقلات هنا إذا أردت
-            },
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'Search',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_cart),
-                label: 'Cart',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Person',
-              ),
-            ],
-          );
-        },
       ),
     );
   }
