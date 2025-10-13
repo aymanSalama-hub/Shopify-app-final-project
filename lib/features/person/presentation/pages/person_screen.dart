@@ -1,7 +1,8 @@
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/widget/custom_text_field_button.dart';
+import 'package:bisky_shop/features/person/presentation/widget/custom_text_field_button.dart';
+
 import 'package:flutter/material.dart';
 
 class PersonScreen extends StatelessWidget {
