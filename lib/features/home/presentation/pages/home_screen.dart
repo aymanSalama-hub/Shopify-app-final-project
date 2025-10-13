@@ -1,6 +1,5 @@
 import 'package:bisky_shop/core/constants/app_images.dart';
 import 'package:bisky_shop/core/constants/app_strings.dart';
-import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/core/utils/text_styles.dart';
 import 'package:bisky_shop/features/home/presentation/widgets/home_slider.dart';
 import 'package:bisky_shop/features/home/presentation/widgets/product_card.dart';

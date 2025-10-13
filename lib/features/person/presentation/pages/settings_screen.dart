@@ -1,6 +1,6 @@
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/widget/custom_text_field_button.dart';
+import 'package:bisky_shop/features/person/presentation/widget/custom_text_field_button.dart';
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -75,7 +75,7 @@ class SettingsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
