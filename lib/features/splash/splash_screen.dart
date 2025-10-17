@@ -49,9 +49,9 @@ class _SplashBodyState extends State<SplashBody>
       Sizeresponsive().init(context);
     });
 
-    // Future.delayed(const Duration(seconds: 4), () {
-    //   context.go(Routs.onboarding);
-    // });
+    Future.delayed(const Duration(seconds: 4), () {
+      context.go(Routs.onboarding);
+    });
   }
 
   @override
