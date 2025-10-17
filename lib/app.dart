@@ -8,6 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+
       routerConfig: Routs.routes,
       debugShowCheckedModeBanner: false,
       title: 'Bisky Shop',

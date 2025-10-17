@@ -7,6 +7,9 @@ import 'package:bisky_shop/features/person/presentation/pages/settings_screen.da
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/on_boarding/presentation/pages/onboarding_body.dart';
+import '../../features/splash/splash_screen.dart';
+
 class Routs {
   static const String splash = '/splash';
   static const String login = '/login';
@@ -19,11 +22,11 @@ class Routs {
   static const String trackOrder = '/trackOrder';
   static const String person = '/person';
   static const String settings = '/settings';
+  static const String onboarding = '/onboarding';
 
   static final routes = GoRouter(
-    initialLocation: mainAppNavigation,
+    initialLocation: Routs.splash,
     routes: [
-      // GoRoute(path: splash, builder: (context, state) => SplashScreen()),
       GoRoute(
         path: mainAppNavigation,
         builder: (context, state) => MainAppNavigationScreen(),
@@ -43,6 +46,12 @@ class Routs {
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
       ),
+      GoRoute(
+        path: splash,
+        builder: (context, state) => ProviderScope(child: SplashBody()),
+      ),
+      GoRoute(path: onboarding, builder: (context, state) => OnBoarding_body()),
+
     ],
   );
 }
