@@ -1,3 +1,5 @@
+import 'package:bisky_shop/features/auth/presentation/page/login.dart';
+import 'package:bisky_shop/features/auth/presentation/page/register.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/track_order.dart';
@@ -37,6 +39,8 @@ class Routs {
         builder: (context, state) => ProviderScope(child: OrdersScreen()),
       ),
       GoRoute(path: trackOrder, builder: (context, state) => TrackOrderPage()),
+      GoRoute(path: login, builder: (context, state) => LoginScreen()),
+      GoRoute(path: register, builder: (context, state) => RegisterScreen()),
       //GoRoute(path: home, builder: (context, state) => HomeScreen()),
 
       //Mohamed Work //

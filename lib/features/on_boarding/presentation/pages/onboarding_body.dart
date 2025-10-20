@@ -1,4 +1,3 @@
-
 import 'package:bisky_shop/features/on_boarding/presentation/pages/page_view_item.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -44,113 +43,42 @@ class _OnBoarding_bodyState extends State<OnBoarding_body> {
       backgroundColor: AppColors.backgroundColor,
       body: OrientationUtil.isPortrait(context)
           ? Stack(
-        children: [
-          page_view_onboarding(
-            pagecontroller: pageController,
-          ),
-          dotIndicitor(
-            dotIndex: pageController!.hasClients ? pageController?.page : 0,
-          ),
-          Visibility(
-            visible: pageController!.hasClients
-                ? (pageController?.page == 2 ? false : true)
-                : true,
-            child: Positioned(
-              top: Sizeresponsive.defaultSize! * 7.5,
-              right: Sizeresponsive.defaultSize! * 3.2,
-              child: TextButton(
-                onPressed: () {
-                  context.go(Routs.mainAppNavigation);
-                },
-                child: const Text(
-                  'Skip',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: Sizeresponsive.defaultSize! * 5,
-            right: Sizeresponsive.defaultSize! * 10,
-            left: Sizeresponsive.defaultSize! * 10,
-            child: Genral_Button(
-              text: pageController!.hasClients
-                  ? (pageController?.page == 2 ? 'Get Started' : 'Next')
-                  : 'Next',
-              ontap: () {
-                if (pageController!.page! < 2) {
-                  pageController?.nextPage(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeIn,
-                  );
-                } else {
-                  context.go(Routs.mainAppNavigation);
-                }
-              },
-            ),
-          ),
-        ],
-      )
-          : Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
-                  flex: 7,
-                  child: page_view_onboarding(
-                    pagecontroller: pageController,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                page_view_onboarding(pagecontroller: pageController),
                 dotIndicitor(
-                  dotIndex:
-                  pageController!.hasClients ? pageController?.page : 0,
+                  dotIndex: pageController!.hasClients
+                      ? pageController?.page
+                      : 0,
                 ),
-                const SizedBox(height: 30),
-              ],
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Visibility(
-                      visible: pageController!.hasClients
-                          ? (pageController?.page == 2 ? false : true)
-                          : true,
-                      child: TextButton(
-                        onPressed: () {
-                          context.go(Routs.mainAppNavigation);
-                        },
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey,
-                            decoration: TextDecoration.underline,
-                          ),
+                Visibility(
+                  visible: pageController!.hasClients
+                      ? (pageController?.page == 2 ? false : true)
+                      : true,
+                  child: Positioned(
+                    top: Sizeresponsive.defaultSize! * 7.5,
+                    right: Sizeresponsive.defaultSize! * 3.2,
+                    child: TextButton(
+                      onPressed: () {
+                        context.go(Routs.login);
+                      },
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
                   ),
-                  Genral_Button(
+                ),
+                Positioned(
+                  bottom: Sizeresponsive.defaultSize! * 5,
+                  right: Sizeresponsive.defaultSize! * 10,
+                  left: Sizeresponsive.defaultSize! * 10,
+                  child: Genral_Button(
                     text: pageController!.hasClients
-                        ? (pageController?.page == 2
-                        ? 'Get Started'
-                        : 'Next')
+                        ? (pageController?.page == 2 ? 'Get Started' : 'Next')
                         : 'Next',
                     ontap: () {
                       if (pageController!.page! < 2) {
@@ -159,17 +87,90 @@ class _OnBoarding_bodyState extends State<OnBoarding_body> {
                           curve: Curves.easeIn,
                         );
                       } else {
-                        context.go(Routs.mainAppNavigation);
+                        context.go(Routs.login);
                       }
                     },
                   ),
-                ],
-              ),
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 7,
+                        child: page_view_onboarding(
+                          pagecontroller: pageController,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      dotIndicitor(
+                        dotIndex: pageController!.hasClients
+                            ? pageController?.page
+                            : 0,
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 30,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Visibility(
+                            visible: pageController!.hasClients
+                                ? (pageController?.page == 2 ? false : true)
+                                : true,
+                            child: TextButton(
+                              onPressed: () {
+                                context.go(Routs.mainAppNavigation);
+                              },
+                              child: const Text(
+                                'Skip',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Genral_Button(
+                          text: pageController!.hasClients
+                              ? (pageController?.page == 2
+                                    ? 'Get Started'
+                                    : 'Next')
+                              : 'Next',
+                          ontap: () {
+                            if (pageController!.page! < 2) {
+                              pageController?.nextPage(
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeIn,
+                              );
+                            } else {
+                              context.go(Routs.login);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
-
 }
