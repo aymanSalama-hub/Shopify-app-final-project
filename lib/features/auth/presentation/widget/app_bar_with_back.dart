@@ -1,25 +1,23 @@
-import 'package:bisky_shop/core/constants/app_images.dart';
+import 'package:bookia/core/constants/app_images.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AppBarWithBack extends StatelessWidget implements PreferredSizeWidget {
-  AppBarWithBack({super.key, this.action, required this.context});
+  const AppBarWithBack({super.key, this.action});
 
   final Widget? action;
-  BuildContext? context;
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: false, // to remove the default back button
+      centerTitle: false,
       title: GestureDetector(
         onTap: () {
           Navigator.pop(context);
         },
         child: SvgPicture.asset(AppImages.backSvg),
       ),
-      centerTitle: false,
-
       actions: [action ?? const SizedBox()],
     );
   }

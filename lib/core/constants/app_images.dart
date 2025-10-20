@@ -10,4 +10,7 @@ class AppImages {
   static const String product = 'assets/images/download.jpg';
   static const String product1 = 'assets/images/download (1).jpg';
   static const String product2 = 'assets/images/download (2).jpg';
+  static const String appleSvg = 'assets/images/cib_apple.svg';
+  static const String googleSvg = 'assets/images/google_ic.svg';
+  static const String eyeSvg = 'assets/icons/eye.svg';
 }
