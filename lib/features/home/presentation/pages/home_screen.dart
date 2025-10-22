@@ -8,7 +8,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+  HomeScreen({super.key, required this.name});
+  String name;
 
   final List<Map<String, String>> featured = [
     {
@@ -70,7 +71,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Text("Hello!", style: TextStyles.styleSize12),
                 Gap(5),
-                Text("John William", style: TextStyles.styleSize14),
+                Text(name, style: TextStyles.styleSize14),
               ],
             ),
           ],
@@ -153,6 +154,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
- 
 }
