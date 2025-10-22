@@ -3,7 +3,6 @@ import 'package:bisky_shop/core/constants/app_strings.dart';
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/core/widgets/app_bar_with_back.dart';
 import 'package:bisky_shop/features/auth/presentation/widget/custom_text_form_field.dart';
 import 'package:bisky_shop/features/auth/presentation/widget/password_text_form_field.dart';
 import 'package:bisky_shop/features/auth/presentation/widget/social_login.dart';
@@ -26,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColorCart,
-      appBar: AppBarWithBack(context: context),
       body: SafeArea(
         child: Padding(
           padding: AppConstants.bodyPadding,
