@@ -3,9 +3,11 @@ import 'package:bisky_shop/features/auth/presentation/page/register.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/track_order.dart';
+import 'package:bisky_shop/features/details/presentation/pages/product_details.dart';
 import 'package:bisky_shop/features/main/main_app_navigation.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
 import 'package:bisky_shop/features/person/presentation/pages/settings_screen.dart';
+import 'package:bisky_shop/features/products/presentation/pages/product_gride_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,6 +19,7 @@ class Routs {
   static const String login = '/login';
   static const String register = '/register';
   static const String mainAppNavigation = '/mainAppNavigation';
+  static const String products = '/products';
   static const String home = '/home';
   static const String details = '/details';
   static const String cart = '/cart';
@@ -26,6 +29,7 @@ class Routs {
   static const String settings = '/settings';
   static const String onboarding = '/onboarding';
 
+
   static final routes = GoRouter(
     initialLocation: Routs.splash,
     routes: [
@@ -33,6 +37,11 @@ class Routs {
         path: mainAppNavigation,
         builder: (context, state) => MainAppNavigationScreen(),
       ),
+
+      GoRoute(path: products, builder: (context, state) => ProductGrideScreen()),
+      GoRoute(path: details, builder: (context, state) => ProductDetailsScreen(item:state.extra as Map<String, dynamic>)),
+      
+
       GoRoute(path: cart, builder: (context, state) => CartScreen()),
       GoRoute(
         path: order,
@@ -55,7 +64,6 @@ class Routs {
         builder: (context, state) => ProviderScope(child: SplashBody()),
       ),
       GoRoute(path: onboarding, builder: (context, state) => OnBoarding_body()),
-
     ],
   );
 }
