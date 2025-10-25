@@ -12,10 +12,7 @@ import 'package:bisky_shop/features/details/presentation/pages/product_details.d
 import 'package:bisky_shop/features/main/main_app_navigation.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
 import 'package:bisky_shop/features/person/presentation/pages/settings_screen.dart';
-<<<<<<< HEAD
 import 'package:bisky_shop/features/products/presentation/pages/product_gride_screen.dart';
-=======
->>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +26,6 @@ class Routs {
   static const String register = '/register';
   static const String mainAppNavigation = '/mainAppNavigation';
   static const String products = '/products';
-  static const String home = '/home';
   static const String details = '/details';
   static const String cart = '/cart';
   static const String order = '/order';
@@ -45,19 +41,25 @@ class Routs {
     routes: [
       GoRoute(
         path: mainAppNavigation,
-        builder: (context, state) {
-          print(state.extra);
-          // Provide CardOrderCubit above the main navigation so the
-          // embedded CartScreen (used inside the bottom navigation pages)
-          // can access the cubit via context.read<CardOrderCubit>().
-          return BlocProvider(
-            create: (context) => CardOrderCubit(),
-            child: MainAppNavigationScreen(
-              name: (state.extra as String?) ?? 'ahmed',
-            ),
-          );
-        },
+        builder: (context, state) => BlocProvider(
+          create: (context) => CardOrderCubit(),
+          child: MainAppNavigationScreen(
+            name: (state.extra as String?) ?? 'ahmed',
+          ),
+        ),
       ),
+
+      GoRoute(
+        path: products,
+        builder: (context, state) => ProductGrideScreen(),
+      ),
+
+      GoRoute(
+        path: details,
+        builder: (context, state) =>
+            ProductDetailsScreen(item: state.extra as Map<String, dynamic>),
+      ),
+
       GoRoute(
         path: cart,
         builder: (context, state) => BlocProvider(
@@ -65,6 +67,7 @@ class Routs {
           child: CartScreen(),
         ),
       ),
+
       GoRoute(
         path: checkout,
         builder: (context, state) => BlocProvider(
@@ -72,33 +75,26 @@ class Routs {
           child: CheckoutScreen(orderData: state.extra as Map<String, dynamic>),
         ),
       ),
+
       GoRoute(
         path: orderSuccess,
         builder: (context, state) => OrderSuccessScreen(),
       ),
-<<<<<<< HEAD
 
-      GoRoute(path: products, builder: (context, state) => ProductGrideScreen()),
-      GoRoute(path: details, builder: (context, state) => ProductDetailsScreen(item:state.extra as Map<String, dynamic>)),
-      
-
-      GoRoute(path: cart, builder: (context, state) => CartScreen()),
-=======
->>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
       GoRoute(
         path: order,
         builder: (context, state) => BlocProvider(
           create: (context) => CardOrderCubit()..getAllUserOrders(),
           child: OrdersScreen(),
         ),
-<<<<<<< HEAD
-=======
       ),
+
       GoRoute(
         path: trackOrder,
         builder: (context, state) =>
             TrackOrderPage(order: state.extra as OrderModel),
       ),
+
       GoRoute(
         path: login,
         builder: (context, state) => BlocProvider(
@@ -106,37 +102,34 @@ class Routs {
           child: LoginScreen(),
         ),
       ),
+
       GoRoute(
         path: register,
         builder: (context, state) => BlocProvider(
           create: (context) => AuthCubit(),
           child: RegisterScreen(),
         ),
->>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
       ),
-      //GoRoute(path: home, builder: (context, state) => HomeScreen()),
 
-      //Mohamed Work //
-      // GoRoute(path: '/', builder: (context, state) => const HomePage()),
-      GoRoute(path: person, builder: (context, state) => const PersonScreen()),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
       GoRoute(
         path: splash,
         builder: (context, state) => ProviderScope(child: SplashBody()),
       ),
-<<<<<<< HEAD
 
       GoRoute(
-        path: products,
-        builder: (context, state) => ProductGrideScreen(),
+        path: settings,
+        builder: (context, state) => const SettingsScreen(),
       ),
 
-=======
->>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
-      GoRoute(path: onboarding, builder: (context, state) => OnBoarding_body()),
+      GoRoute(
+        path: person,
+        builder: (context, state) => const PersonScreen(),
+      ),
+
+      GoRoute(
+        path: onboarding,
+        builder: (context, state) => OnBoarding_body(),
+      ),
     ],
   );
 }
