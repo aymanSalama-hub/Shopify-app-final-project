@@ -32,11 +32,9 @@ class CheckoutScreen extends StatelessWidget {
         } else if (state is CardOrderError) {
           pop(context);
           final msg = state.message;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(msg)));
         }
       },
       child: Scaffold(
@@ -194,7 +192,6 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   Future<void> _placeOrder(CardOrderCubit cubit) async {
-    
     if (cubit.addressController.text.trim().isEmpty) {
       return;
     }
