@@ -45,10 +45,14 @@ dependencies:
   dots_indicator: ^4.0.1
   firebase_core: ^4.2.0
   firebase_auth: ^6.1.1
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
   cloud_firestore: ^6.0.3
 >>>>>>> Stashed changes
+=======
+  cloud_firestore: ^6.0.3
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
 
 dev_dependencies:
   flutter_test:

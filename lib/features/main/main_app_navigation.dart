@@ -25,11 +25,15 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
     super.initState();
     pages = [
       HomeScreen(name: widget.name),
+<<<<<<< HEAD
 <<<<<<< Updated upstream
       Container(),
 =======
       ProductGrideScreen(),
 >>>>>>> Stashed changes
+=======
+      ProductGrideScreen(),
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
       CartScreen(),
       PersonScreen(),
     ];

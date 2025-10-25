@@ -1,5 +1,6 @@
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 import 'package:flutter/material.dart';
 
@@ -61,6 +62,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             _buildPlaceOrderButton(total),
           ],
 =======
+=======
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +134,10 @@ class CheckoutScreen extends StatelessWidget {
               _buildPlaceOrderButton(cubit),
             ],
           ),
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
         ),
       ),
     );
@@ -144,11 +150,15 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   Widget _buildAddressField() {
 =======
   Widget _buildAddressField(CardOrderCubit cubit) {
 >>>>>>> Stashed changes
+=======
+  Widget _buildAddressField(CardOrderCubit cubit) {
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -163,11 +173,15 @@ class CheckoutScreen extends StatelessWidget {
         ],
       ),
       child: TextField(
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         controller: _addressController,
 =======
         controller: cubit.addressController,
 >>>>>>> Stashed changes
+=======
+        controller: cubit.addressController,
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
         maxLines: 3,
         decoration: const InputDecoration(
           hintText: 'Enter your full delivery address...',
@@ -177,9 +191,12 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   Widget _buildSummaryBox(double total) {
 =======
+=======
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
   Widget _buildSummaryBox(
     double subtotal,
     double discount,
@@ -187,7 +204,10 @@ class CheckoutScreen extends StatelessWidget {
     double total,
   ) {
     final items = (orderData['totalItems'] as int?)?.toString() ?? '0';
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -203,11 +223,15 @@ class CheckoutScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
+<<<<<<< HEAD
 <<<<<<< Updated upstream
           _buildSummaryRow('Items', '$totalItems'),
 =======
           _buildSummaryRow('Items', items),
 >>>>>>> Stashed changes
+=======
+          _buildSummaryRow('Items', items),
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
           _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(2)}'),
           _buildSummaryRow('Discount', '-\$${discount.toStringAsFixed(2)}'),
           _buildSummaryRow('Delivery', '\$${delivery.toStringAsFixed(2)}'),
@@ -245,31 +269,43 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   Widget _buildPlaceOrderButton(double total) {
 =======
   Widget _buildPlaceOrderButton(CardOrderCubit cubit) {
 >>>>>>> Stashed changes
+=======
+  Widget _buildPlaceOrderButton(CardOrderCubit cubit) {
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
     return SizedBox(
       width: double.infinity,
       height: 55,
       child: ElevatedButton(
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         onPressed: _isPlacingOrder ? null : _placeOrder,
 =======
         onPressed: cubit.isPlacingOrder ? null : () => _placeOrder(cubit),
 >>>>>>> Stashed changes
+=======
+        onPressed: cubit.isPlacingOrder ? null : () => _placeOrder(cubit),
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF6C63FF),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
         ),
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         child: _isPlacingOrder
 =======
         child: cubit.isPlacingOrder
 >>>>>>> Stashed changes
+=======
+        child: cubit.isPlacingOrder
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
             ? const CircularProgressIndicator(color: Colors.white)
             : const Text(
                 'Place Order',
@@ -283,6 +319,7 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   Future<void> _placeOrder() async {
     if (_addressController.text.trim().isEmpty) {
@@ -306,6 +343,8 @@ class CheckoutScreen extends StatelessWidget {
       pushTo(context, Routs.orderSuccess);
     }
 =======
+=======
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
   Future<void> _placeOrder(CardOrderCubit cubit) async {
     
     if (cubit.addressController.text.trim().isEmpty) {
@@ -319,6 +358,9 @@ class CheckoutScreen extends StatelessWidget {
     }
 
     cubit.isPlacingOrder = false;
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
   }
 }
