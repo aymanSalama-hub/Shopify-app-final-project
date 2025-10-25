@@ -169,23 +169,14 @@ class CartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           ElevatedButton(
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-            onPressed: () {
-              pushTo(context, Routs.checkout);
-            },
-=======
-=======
->>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
+
+
             onPressed: cartItems.isEmpty
                 ? null
                 : () {
                     cubit.createOrder(cartItems, total);
                   },
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> f76b9bdf127b917888a22e6c24bb603b568380ff
+
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6C63FF),
               minimumSize: const Size(double.infinity, 40),
