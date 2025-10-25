@@ -3,7 +3,17 @@ import 'package:flutter/material.dart';
 
 class CartItemWidget extends StatelessWidget {
   final CartItemModel item;
-  const CartItemWidget({super.key, required this.item});
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
+  final VoidCallback onRemove;
+
+  const CartItemWidget({
+    super.key,
+    required this.item,
+    required this.onIncrease,
+    required this.onDecrease,
+    required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +23,7 @@ class CartItemWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
@@ -53,18 +63,18 @@ class CartItemWidget extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.redAccent),
-            onPressed: () {},
+            onPressed: onRemove,
           ),
           Container(
             decoration: BoxDecoration(
-              color: Color(0xFF6C63FF),
+              color: const Color(0xFF6C63FF),
               borderRadius: BorderRadius.circular(25),
             ),
             child: Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: onDecrease,
                 ),
                 Text(
                   item.quantity.toString().padLeft(2, '0'),
@@ -75,7 +85,7 @@ class CartItemWidget extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.add, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: onIncrease,
                 ),
               ],
             ),

@@ -1,6 +1,8 @@
 import 'package:bisky_shop/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:bisky_shop/features/auth/presentation/page/login.dart';
 import 'package:bisky_shop/features/auth/presentation/page/register.dart';
+import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
+import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/order_success_screen.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
@@ -39,22 +41,47 @@ class Routs {
         path: mainAppNavigation,
         builder: (context, state) {
           print(state.extra);
-          return MainAppNavigationScreen(
-            name: (state.extra as String?) ?? 'ahmed',
+          // Provide CardOrderCubit above the main navigation so the
+          // embedded CartScreen (used inside the bottom navigation pages)
+          // can access the cubit via context.read<CardOrderCubit>().
+          return BlocProvider(
+            create: (context) => CardOrderCubit(),
+            child: MainAppNavigationScreen(
+              name: (state.extra as String?) ?? 'ahmed',
+            ),
           );
         },
       ),
-      GoRoute(path: cart, builder: (context, state) => CartScreen()),
-      GoRoute(path: checkout, builder: (context, state) => CheckoutScreen()),
+      GoRoute(
+        path: cart,
+        builder: (context, state) => BlocProvider(
+          create: (context) => CardOrderCubit(),
+          child: CartScreen(),
+        ),
+      ),
+      GoRoute(
+        path: checkout,
+        builder: (context, state) => BlocProvider(
+          create: (context) => CardOrderCubit(),
+          child: CheckoutScreen(orderData: state.extra as Map<String, dynamic>),
+        ),
+      ),
       GoRoute(
         path: orderSuccess,
         builder: (context, state) => OrderSuccessScreen(),
       ),
       GoRoute(
         path: order,
-        builder: (context, state) => ProviderScope(child: OrdersScreen()),
+        builder: (context, state) => BlocProvider(
+          create: (context) => CardOrderCubit()..getAllUserOrders(),
+          child: OrdersScreen(),
+        ),
       ),
-      GoRoute(path: trackOrder, builder: (context, state) => TrackOrderPage()),
+      GoRoute(
+        path: trackOrder,
+        builder: (context, state) =>
+            TrackOrderPage(order: state.extra as OrderModel),
+      ),
       GoRoute(
         path: login,
         builder: (context, state) => BlocProvider(
