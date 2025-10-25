@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MainAppNavigationScreen extends StatefulWidget {
-  const MainAppNavigationScreen({super.key});
+  const MainAppNavigationScreen({super.key, required this.name});
+  final String name;
 
   @override
   State<MainAppNavigationScreen> createState() =>
@@ -16,12 +17,18 @@ class MainAppNavigationScreen extends StatefulWidget {
 
 class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
   int selectedIndex = 0;
-  List<Widget> pages = [
-    HomeScreen(),
-    Container(),
-    CartScreen(),
-    PersonScreen(),
-  ];
+
+  late List<Widget> pages;
+  @override
+  void initState() {
+    super.initState();
+    pages = [
+      HomeScreen(name: widget.name),
+      Container(),
+      CartScreen(),
+      PersonScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

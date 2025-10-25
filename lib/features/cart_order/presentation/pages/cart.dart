@@ -1,4 +1,6 @@
 import 'package:bisky_shop/core/constants/app_images.dart';
+import 'package:bisky_shop/core/routes/navigation.dart';
+import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/cart_order/data/model/model_cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/widgets/cart_item_widget.dart';
@@ -116,7 +118,9 @@ class CartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              pushTo(context, Routs.checkout);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6C63FF),
               minimumSize: const Size(double.infinity, 36),

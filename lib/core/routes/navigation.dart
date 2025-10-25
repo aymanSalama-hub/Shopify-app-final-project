@@ -6,13 +6,20 @@ pushTo(BuildContext context, String path, {Object? extra}) {
 }
 
 pushReplacementTo(BuildContext context, String path, {Object? extra}) {
-  context.pushReplacement(path);
+  context.pushReplacement(path, extra: extra);
 }
 
 pushAndRemoveUntil(BuildContext context, String path, {Object? extra}) {
-  context.go(path);
+  context.go(path, extra: extra);
 }
 
 pop(BuildContext context) {
   context.pop();
+}
+
+showdialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => const Center(child: CircularProgressIndicator()),
+  );
 }

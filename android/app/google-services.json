@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "195987422545",
+    "project_id": "shopify-82798",
+    "storage_bucket": "shopify-82798.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195987422545:android:8f2bff7559c36bce492770",
+        "android_client_info": {
+          "package_name": "com.example.bisky_shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCs89rgBTg02u1bvWAzFtZ4CGa1gCHIEQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
