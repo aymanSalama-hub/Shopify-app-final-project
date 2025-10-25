@@ -1,80 +1,77 @@
-// ======= Provider for Tab Index =======
-import 'package:bisky_shop/core/constants/app_images.dart';
-import 'package:bisky_shop/features/cart_order/data/model/model_cart.dart';
+// Orders screen rewritten: TabBar + TabBarView with Bloc-driven data
+
+import 'package:bisky_shop/core/routes/navigation.dart';
+import 'package:bisky_shop/core/routes/routs.dart';
+import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
+import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
 import 'package:bisky_shop/features/cart_order/presentation/widgets/order_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-final orderTabProvider = StateProvider<int>((ref) => 0);
-
-List<CartItemModel> activeOrders = [
-  CartItemModel(
-    title: 'Airpods',
-    brand: 'Apple',
-    price: 333,
-    quantity: 2,
-    imageUrl: AppImages.product1,
-  ),
-  CartItemModel(
-    title: 'Hoodie',
-    brand: 'Puma',
-    price: 50,
-    quantity: 2,
-    imageUrl: AppImages.product2,
-  ),
-];
-
-List<CartItemModel> completedOrders = [
-  CartItemModel(
-    title: 'Watch',
-    price: 40,
-    brand: 'Rolex',
-    imageUrl: AppImages.product,
-  ),
-];
-
-List<CartItemModel> canceledOrders = [
-  CartItemModel(
-    title: 'Hoodie',
-    price: 40,
-    brand: 'Rolex',
-    imageUrl: AppImages.product1,
-  ),
-];
-
-class OrdersScreen extends ConsumerWidget {
+class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tabIndex = ref.watch(orderTabProvider);
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
 
-    final tabs = ['Active', 'Completed', 'Cancel'];
+class _OrdersScreenState extends State<OrdersScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
 
-    // ===== Choose list based on tab =====
-    List<CartItemModel> currentList = [];
-    if (tabIndex == 0) {
-      currentList = activeOrders;
-    } else if (tabIndex == 1) {
-      currentList = completedOrders;
-    } else {
-      currentList = canceledOrders;
-    }
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    // Ensure orders are loaded when the screen appears
+    // Use addPostFrameCallback to avoid calling during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cubit = context.read<CardOrderCubit>();
+      cubit.getAllUserOrders();
+      // keep cubit.tabIndex in sync with tab controller
+      _tabController.index = cubit.tabIndex;
+      _tabController.addListener(() {
+        if (_tabController.indexIsChanging) return;
+        cubit.changeTabIndex(_tabController.index);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Widget _emptyState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey),
+          SizedBox(height: 16),
+          Text('No orders found', style: TextStyle(color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tabs = const ['Active', 'Completed', 'Cancelled'];
+    final cubit = context.read<CardOrderCubit>();
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Padding(
-          padding: EdgeInsets.only(left: 12),
+          padding: const EdgeInsets.only(left: 12),
           child: CircleAvatar(
-            backgroundColor: Color(0xfff2f2f2),
+            backgroundColor: const Color(0xfff2f2f2),
             child: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
             ),
           ),
         ),
@@ -83,74 +80,101 @@ class OrdersScreen extends ConsumerWidget {
           'Orders',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.deepPurple,
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey.shade500,
+          tabs: tabs.map((t) => Tab(text: t)).toList(),
+        ),
       ),
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // ===== Tabs =====
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(tabs.length, (index) {
-                final isActive = index == tabIndex;
-                return GestureDetector(
-                  onTap: () =>
-                      ref.read(orderTabProvider.notifier).state = index,
-                  child: Column(
-                    children: [
-                      Text(
-                        tabs[index],
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: isActive ? Colors.black : Colors.grey.shade500,
-                        ),
-                      ),
-                      if (isActive)
-                        Container(
-                          margin: const EdgeInsets.only(top: 6),
-                          height: 3,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurple,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-          ),
+      body: BlocBuilder<CardOrderCubit, CardOrderState>(
+        builder: (context, state) {
+          if (state is CardOrderLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          const SizedBox(height: 10),
-
-          // ===== Orders List =====
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: currentList.isEmpty
-                  ? const Center(
-                      key: ValueKey('empty'),
-                      child: Text(
-                        'No orders found',
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
-                    )
-                  : ListView.builder(
-                      key: ValueKey(tabIndex),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: currentList.length,
-                      itemBuilder: (context, index) {
-                        final order = currentList[index];
-                        return OrderCard(order: order);
-                      },
+          if (state is CardOrderError) {
+            final msg = state.message;
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      msg,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, color: Colors.red),
                     ),
-            ),
-          ),
-        ],
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (msg.toLowerCase().contains('logged in')) {
+                          pushTo(context, Routs.login);
+                        } else {
+                          context.read<CardOrderCubit>().getAllUserOrders();
+                        }
+                      },
+                      child: Text(
+                        msg.toLowerCase().contains('logged in')
+                            ? 'Login'
+                            : 'Retry',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          // Loaded or initial: show TabBarView mapped to cubit's lists
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              // Active
+              Builder(
+                builder: (context) {
+                  final list = cubit.activeOrders;
+                  if (list.isEmpty) return _emptyState();
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: list.length,
+                    itemBuilder: (context, index) =>
+                        OrderCard(order: list[index]),
+                  );
+                },
+              ),
+              // Completed
+              Builder(
+                builder: (context) {
+                  final list = cubit.completedOrders;
+                  if (list.isEmpty) return _emptyState();
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: list.length,
+                    itemBuilder: (context, index) =>
+                        OrderCard(order: list[index]),
+                  );
+                },
+              ),
+              // Cancelled
+              Builder(
+                builder: (context) {
+                  final list = cubit.canceledOrders;
+                  if (list.isEmpty) return _emptyState();
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: list.length,
+                    itemBuilder: (context, index) =>
+                        OrderCard(order: list[index]),
+                  );
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

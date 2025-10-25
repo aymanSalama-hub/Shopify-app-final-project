@@ -3,6 +3,7 @@ import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/home/presentation/pages/home_screen.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
+import 'package:bisky_shop/features/products/presentation/pages/product_gride_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -24,7 +25,11 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
     super.initState();
     pages = [
       HomeScreen(name: widget.name),
+<<<<<<< Updated upstream
       Container(),
+=======
+      ProductGrideScreen(),
+>>>>>>> Stashed changes
       CartScreen(),
       PersonScreen(),
     ];

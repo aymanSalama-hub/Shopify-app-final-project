@@ -1,6 +1,8 @@
 import 'package:bisky_shop/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:bisky_shop/features/auth/presentation/page/login.dart';
 import 'package:bisky_shop/features/auth/presentation/page/register.dart';
+import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
+import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/order_success_screen.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
@@ -40,12 +42,7 @@ class Routs {
     routes: [
       GoRoute(
         path: mainAppNavigation,
-        builder: (context, state) {
-          print(state.extra);
-          return MainAppNavigationScreen(
-            name: (state.extra as String?) ?? 'ahmed',
-          );
-        },
+        builder: (context, state) => MainAppNavigationScreen(),
       ),
 
       GoRoute(path: products, builder: (context, state) => ProductGrideScreen()),
@@ -53,30 +50,16 @@ class Routs {
       
 
       GoRoute(path: cart, builder: (context, state) => CartScreen()),
-      GoRoute(path: checkout, builder: (context, state) => CheckoutScreen()),
-      GoRoute(
-        path: orderSuccess,
-        builder: (context, state) => OrderSuccessScreen(),
-      ),
       GoRoute(
         path: order,
-        builder: (context, state) => ProviderScope(child: OrdersScreen()),
+        builder: (context, state) => BlocProvider(
+          create: (context) => CardOrderCubit()..getAllUserOrders(),
+          child: OrdersScreen(),
+        ),
       ),
       GoRoute(path: trackOrder, builder: (context, state) => TrackOrderPage()),
-      GoRoute(
-        path: login,
-        builder: (context, state) => BlocProvider(
-          create: (context) => AuthCubit(),
-          child: LoginScreen(),
-        ),
-      ),
-      GoRoute(
-        path: register,
-        builder: (context, state) => BlocProvider(
-          create: (context) => AuthCubit(),
-          child: RegisterScreen(),
-        ),
-      ),
+      GoRoute(path: login, builder: (context, state) => LoginScreen()),
+      GoRoute(path: register, builder: (context, state) => RegisterScreen()),
       //GoRoute(path: home, builder: (context, state) => HomeScreen()),
 
       //Mohamed Work //
@@ -90,6 +73,12 @@ class Routs {
         path: splash,
         builder: (context, state) => ProviderScope(child: SplashBody()),
       ),
+
+      GoRoute(
+        path: products,
+        builder: (context, state) => ProductGrideScreen(),
+      ),
+
       GoRoute(path: onboarding, builder: (context, state) => OnBoarding_body()),
     ],
   );
