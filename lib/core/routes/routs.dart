@@ -3,6 +3,7 @@ import 'package:bisky_shop/features/auth/presentation/page/login.dart';
 import 'package:bisky_shop/features/auth/presentation/page/register.dart';
 import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
+import 'package:bisky_shop/features/cart_order/presentation/pages/admin_track.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/order_success_screen.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
@@ -35,6 +36,7 @@ class Routs {
   static const String onboarding = '/onboarding';
   static const String checkout = '/checkout';
   static const String orderSuccess = '/orderSuccess';
+  static const String adminTrack = '/adminTrack';
 
   static final routes = GoRouter(
     initialLocation: Routs.splash,
@@ -88,6 +90,13 @@ class Routs {
           child: OrdersScreen(),
         ),
       ),
+      GoRoute(
+        path: adminTrack,
+        builder: (context, state) => BlocProvider(
+          create: (context) => CardOrderCubit(),
+          child: AdminTrackOrderPage(order: state.extra as OrderModel,),
+        ),
+      ),
 
       GoRoute(
         path: trackOrder,
@@ -121,15 +130,9 @@ class Routs {
         builder: (context, state) => const SettingsScreen(),
       ),
 
-      GoRoute(
-        path: person,
-        builder: (context, state) => const PersonScreen(),
-      ),
+      GoRoute(path: person, builder: (context, state) => const PersonScreen()),
 
-      GoRoute(
-        path: onboarding,
-        builder: (context, state) => OnBoarding_body(),
-      ),
+      GoRoute(path: onboarding, builder: (context, state) => OnBoarding_body()),
     ],
   );
 }

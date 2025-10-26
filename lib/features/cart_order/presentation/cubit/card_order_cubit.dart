@@ -14,6 +14,7 @@ class CardOrderCubit extends Cubit<CardOrderState> {
   var addressController = TextEditingController();
   var isPlacingOrder = false;
   var orderId1 = '';
+  var user1 = '';
   int tabIndex = 0;
   List<OrderModel> activeOrders = [];
   List<OrderModel> completedOrders = [];
@@ -62,9 +63,14 @@ class CardOrderCubit extends Cubit<CardOrderState> {
   Future<void> updateOrderAddress(String orderId, String address) async {
     emit(CardOrderLoading());
     try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        emit(CardOrderError('You must be logged in to update the order.'));
+        return;
+      }
       await FirebaseFirestore.instance
           .collection('orders')
-          .doc(_auth.currentUser!.uid)
+          .doc(user.uid)
           .collection('Userorders')
           .doc(orderId)
           .update({'address': address});
@@ -75,33 +81,153 @@ class CardOrderCubit extends Cubit<CardOrderState> {
   }
 
   Future<void> getAllUserOrders() async {
+    emit(CardOrderLoading());
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        // User must be logged in to create an order
-        emit(CardOrderError('You must be logged in to place an order.'));
+        // User must be logged in to view orders
+        emit(CardOrderError('You must be logged in to view orders.'));
         return;
       }
-      final userId = user.uid;
-      final querySnapshot = await _firestore
+      // safe assign photoURL if available
+      user1 = user.photoURL ?? '';
+      if (user.photoURL != 'Admin') {
+        final userId = user.uid;
+        final querySnapshot = await _firestore
+            .collection('orders')
+            .doc(userId)
+            .collection('Userorders')
+            .get();
+        var orders = querySnapshot.docs.map((doc) {
+          var order = OrderModel.fromMap(doc.data());
+
+          return order;
+        }).toList();
+        activeOrders = orders
+            .where((order) => order.status == 'active')
+            .toList();
+        completedOrders = orders
+            .where((order) => order.status == 'completed')
+            .toList();
+        canceledOrders = orders
+            .where((order) => order.status == 'canceled')
+            .toList();
+        emit(CardOrderLoaded());
+      } else {
+        print('Admin user detected, fetching all orders');
+        List<OrderModel> allOrders = [];
+
+        try {
+          // For admin, directly query all Userorders using collectionGroup
+          print('Querying all Userorders using collectionGroup');
+          // Note: orderBy requires an index. Get orders without sorting first
+          final ordersQuery = await _firestore
+              .collectionGroup('Userorders')
+              .get();
+
+          print('Found ${ordersQuery.docs.length} total orders');
+
+          // Convert each order document to OrderModel
+          for (var doc in ordersQuery.docs) {
+            try {
+              final data = doc.data();
+              // Get the user ID from the document path
+              final pathParts = doc.reference.path.split('/');
+              final userId =
+                  pathParts[1]; // orders/{userId}/Userorders/{orderId}
+
+              // Add essential fields if missing
+              data['orderId'] = doc.id;
+              data['userId'] = userId;
+
+              print('Processing order ${doc.id} for user $userId');
+              final order = OrderModel.fromMap(data);
+              allOrders.add(order);
+            } catch (e) {
+              print('Error parsing order ${doc.id}: $e');
+              print('Order data: ${doc.data()}');
+            }
+          }
+
+          print('Total orders fetched: ${allOrders.length}');
+
+          // Sort by date (newest first)
+          allOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+          // Filter into status lists
+          activeOrders = allOrders
+              .where((order) => order.status.toLowerCase() == 'active')
+              .toList();
+          completedOrders = allOrders
+              .where((order) => order.status.toLowerCase() == 'completed')
+              .toList();
+          canceledOrders = allOrders
+              .where((order) => order.status.toLowerCase() == 'canceled')
+              .toList();
+
+          print(
+            'Active: ${activeOrders.length}, Completed: ${completedOrders.length}, Canceled: ${canceledOrders.length}',
+          );
+          emit(CardOrderLoaded());
+          // Print first order details for debugging if available
+          if (allOrders.isNotEmpty) {
+            final first = allOrders.first;
+            print(
+              'Sample order - ID: ${first.orderId}, Status: ${first.status}, Items: ${first.items.length}',
+            );
+          }
+        } catch (e) {
+          print('Error fetching all orders: $e');
+          emit(CardOrderError(e.toString()));
+          return;
+        }
+      }
+
+      print(activeOrders.length);
+
+      emit(CardOrderLoaded());
+    } catch (e) {
+      emit(CardOrderError(e.toString()));
+    }
+  }
+
+  Future<void> updatePrograss(
+    String orderId,
+    String prograss,
+    String userId,
+  ) async {
+    try {
+      emit(CardOrderLoading());
+      final user = _auth.currentUser;
+      if (user == null) {
+        emit(CardOrderError('You must be logged in to update the order.'));
+        return;
+      }
+      await FirebaseFirestore.instance
           .collection('orders')
           .doc(userId)
           .collection('Userorders')
-          .get();
-      var orders = querySnapshot.docs.map((doc) {
-        var order = OrderModel.fromMap(doc.data());
+          .doc(orderId)
+          .update({'deliveryPrograss': prograss});
+      emit(CardOrderLoaded());
+    } catch (e) {
+      emit(CardOrderError(e.toString()));
+    }
+  }
 
-        return order;
-      }).toList();
-      activeOrders = orders.where((order) => order.status == 'active').toList();
-      completedOrders = orders
-          .where((order) => order.status == 'completed')
-          .toList();
-      canceledOrders = orders
-          .where((order) => order.status == 'canceled')
-          .toList();
-      print(activeOrders.length);
-
+  Future<void> completeOrder(String orderId, String userId) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        emit(CardOrderError('You must be logged in to complete the order.'));
+        return;
+      }
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(userId)
+          .collection('Userorders')
+          .doc(orderId)
+          .update({'status': 'completed'});
       emit(CardOrderLoaded());
     } catch (e) {
       emit(CardOrderError(e.toString()));

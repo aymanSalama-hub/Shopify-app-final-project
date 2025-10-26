@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderModel order;
+  final String? role;
 
-  const OrderCard({super.key, required this.order});
+  const OrderCard({super.key, required this.order, this.role});
 
   // Status color mapping
   Color _getStatusColor(String status) {
@@ -228,7 +229,12 @@ class OrderCard extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8),
                   child: ElevatedButton(
                     onPressed: () {
-                      pushTo(context, Routs.trackOrder, extra: order);
+                      print('Role in OrderCard: $role');
+                      if (role != 'Admin') {
+                        pushTo(context, Routs.trackOrder, extra: order);
+                      } else {
+                        pushTo(context, Routs.adminTrack, extra: order);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,

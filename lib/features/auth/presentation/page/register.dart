@@ -1,5 +1,6 @@
 import 'package:bisky_shop/core/constants/app_constants.dart';
 import 'package:bisky_shop/core/constants/app_strings.dart';
+import 'package:bisky_shop/core/constants/user_type.dart';
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
@@ -32,11 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else if (state is AuthsSuccessState) {
           pop(context);
           print(cubit.name.text);
-          pushAndRemoveUntil(
-            context,
-            Routs.mainAppNavigation,
-            extra: cubit.name.text,
-          );
+          pushAndRemoveUntil(context, Routs.login);
         } else if (state is AuthsErrorState) {
           pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -96,8 +93,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     CustomTextFormField(
                       controller: cubit.email,
                       hintText: AppStrings.emailHint,
-                      validator: (value) =>
-                          value!.isEmpty ? 'Please enter your email' : null,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please confirm your password';
+                        } else if (cubit.selectedUserType == UserType.admin &&
+                            value.endsWith('@admin.com') == false) {
+                          return 'you are not allowed to register as admin if you are not admin';
+                        }
+                        return null;
+                      },
                     ),
                     const Gap(16),
 
@@ -123,7 +127,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-
+                    const Gap(16),
+                    SegmentedButton<UserType>(
+                      segments: const [
+                        ButtonSegment<UserType>(
+                          value: UserType.customer,
+                          label: Text('Customer'),
+                        ),
+                        ButtonSegment<UserType>(
+                          value: UserType.admin,
+                          label: Text('Admin'),
+                        ),
+                      ],
+                      selected: {cubit.selectedUserType},
+                      onSelectionChanged: (newSelection) {
+                        setState(() {
+                          cubit.selectedUserType = newSelection.first;
+                        });
+                      },
+                    ),
                     const Gap(30),
 
                     /// 🔹 Register Button

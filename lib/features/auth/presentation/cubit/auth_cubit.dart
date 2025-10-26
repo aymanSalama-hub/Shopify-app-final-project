@@ -1,3 +1,4 @@
+import 'package:bisky_shop/core/constants/user_type.dart';
 import 'package:bisky_shop/features/auth/presentation/cubit/auths_states.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
@@ -10,6 +11,8 @@ class AuthCubit extends Cubit<AuthStates> {
   final email = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
+  UserType selectedUserType = UserType.customer;
+  var role = '';
   login() async {
     emit(AuthsLoadingState());
     try {
@@ -17,7 +20,8 @@ class AuthCubit extends Cubit<AuthStates> {
         email: email.text,
         password: password.text,
       );
-      name.text=credential.user?.displayName??'';
+      name.text = credential.user?.displayName ?? '';
+      role = credential.user?.photoURL ?? '';
       emit(AuthsSuccessState());
     } on FirebaseAuthException catch (e) {
       emit(AuthsErrorState());
@@ -41,6 +45,11 @@ class AuthCubit extends Cubit<AuthStates> {
             password: password.text,
           );
       credential.user?.updateDisplayName(name.text);
+      if (selectedUserType == UserType.admin) {
+        credential.user?.updatePhotoURL('Admin');
+      } else {
+        credential.user?.updatePhotoURL('Customer');
+      }
       emit(AuthsSuccessState());
     } on FirebaseAuthException catch (e) {
       emit(AuthsErrorState());

@@ -32,7 +32,9 @@ class _OrdersScreenState extends State<OrdersScreen>
       _tabController.index = cubit.tabIndex;
       _tabController.addListener(() {
         if (_tabController.indexIsChanging) return;
+        // Update tab index and refresh data from Firebase
         cubit.changeTabIndex(_tabController.index);
+        cubit.getAllUserOrders(); // Refresh data when tab changes
       });
     });
   }
@@ -65,16 +67,18 @@ class _OrdersScreenState extends State<OrdersScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
-          child: CircleAvatar(
-            backgroundColor: const Color(0xfff2f2f2),
-            child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
-            ),
-          ),
-        ),
+        leading: cubit.user1 == 'Admin'
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: CircleAvatar(
+                  backgroundColor: const Color(0xfff2f2f2),
+                  child: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  ),
+                ),
+              ),
         centerTitle: true,
         title: const Text(
           'Orders',
@@ -142,7 +146,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                     padding: const EdgeInsets.all(12),
                     itemCount: list.length,
                     itemBuilder: (context, index) =>
-                        OrderCard(order: list[index]),
+                        OrderCard(order: list[index], role: cubit.user1),
                   );
                 },
               ),
@@ -155,7 +159,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                     padding: const EdgeInsets.all(12),
                     itemCount: list.length,
                     itemBuilder: (context, index) =>
-                        OrderCard(order: list[index]),
+                        OrderCard(order: list[index], role: cubit.user1),
                   );
                 },
               ),
