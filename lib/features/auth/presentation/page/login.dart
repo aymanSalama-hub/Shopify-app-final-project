@@ -31,11 +31,15 @@ class _LoginScreenState extends State<LoginScreen> {
           showdialog(context);
         } else if (state is AuthsSuccessState) {
           pop(context);
-          pushAndRemoveUntil(
-            context,
-            Routs.mainAppNavigation,
-            extra: cubit.name.text,
-          );
+          if (cubit.role == 'Admin') {
+            pushAndRemoveUntil(context, Routs.order);
+          } else {
+            pushAndRemoveUntil(
+              context,
+              Routs.mainAppNavigation,
+              extra: cubit.name.text,
+            );
+          }
         } else if (state is AuthsErrorState) {
           pop(context);
           ScaffoldMessenger.of(context).showSnackBar(

@@ -38,19 +38,28 @@ class OrderModel {
   }
 
   factory OrderModel.fromMap(Map<String, dynamic> map) {
+    final created = map['createdAt'];
+    DateTime createdAt;
+    if (created is Timestamp) {
+      createdAt = created.toDate();
+    } else if (created is DateTime) {
+      createdAt = created;
+    } else {
+      createdAt = DateTime.now();
+    }
+
     return OrderModel(
-      orderId: map['orderId'],
-      userId: map['userId'],
-      items:
-          (map['items'] as List<dynamic>?)
+      orderId: map['orderId'] ?? '',
+      userId: map['userId'] ?? '',
+      items: (map['items'] as List<dynamic>?)
               ?.map((e) => CartItemModel.fromMap(Map<String, dynamic>.from(e)))
               .toList() ??
           [],
-      totalPrice: (map['totalPrice'] as num).toDouble(),
-      status: map['status'],
-      deliveryPrograss: map['deliveryPrograss'],
-      address: map['address'],
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      totalPrice: (map['totalPrice'] as num?)?.toDouble() ?? 0.0,
+      status: map['status'] ?? 'active',
+      deliveryPrograss: map['deliveryPrograss'] ?? '',
+      address: map['address'] ?? '',
+      createdAt: createdAt,
     );
   }
 }

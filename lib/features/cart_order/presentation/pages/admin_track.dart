@@ -1,47 +1,73 @@
 import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
+import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
+import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TrackOrderPage extends StatelessWidget {
+class AdminTrackOrderPage extends StatelessWidget {
   final OrderModel order;
 
-  const TrackOrderPage({super.key, required this.order});
+  const AdminTrackOrderPage({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xfff7f7f7),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Track Order',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _OrderInfoCard(order: order),
-            const SizedBox(height: 20),
-            _OrderTimeline(
-              status: order.status,
-              deliveryPrograss: order.deliveryPrograss,
+    CardOrderCubit cubit = context.read<CardOrderCubit>();
+    return BlocBuilder<CardOrderCubit, CardOrderState>(
+      builder: (context, state) {
+        if (state is CardOrderLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (state is CardOrderError) {
+          return Scaffold(body: Center(child: Text(state.message)));
+        }
+        return Scaffold(
+          backgroundColor: const Color(0xfff7f7f7),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 1,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
             ),
-            const SizedBox(height: 20),
-            _AddressSection(address: order.address),
-            const SizedBox(height: 30),
-            _ContactButton(),
-          ],
-        ),
-      ),
+            title: const Text(
+              'Track Order',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+          ),
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _OrderInfoCard(order: order),
+                const SizedBox(height: 20),
+                _OrderTimeline(
+                  order: order,
+                  status: order.status,
+                  deliveryPrograss: order.deliveryPrograss,
+                  cubit: cubit,
+                ),
+                const SizedBox(height: 20),
+                _AddressSection(
+                  address: order.address,
+                  orderId: order.orderId,
+                  userId: order.userId,
+                ),
+                const SizedBox(height: 30),
+                _ContactButton(),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -57,7 +83,7 @@ class _OrderInfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(11),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -145,10 +171,17 @@ class _OrderInfoCard extends StatelessWidget {
 }
 
 class _OrderTimeline extends StatelessWidget {
+  final OrderModel order;
   final String status;
   final String deliveryPrograss;
+  final CardOrderCubit cubit;
 
-  const _OrderTimeline({required this.status, required this.deliveryPrograss});
+  _OrderTimeline({
+    required this.order,
+    required this.status,
+    required this.deliveryPrograss,
+    required this.cubit,
+  });
 
   List<Map<String, dynamic>> get _steps {
     return [
@@ -239,36 +272,72 @@ class _OrderTimeline extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            step['title'],
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: step['isDone']
-                                  ? Colors.black
-                                  : Colors.grey.shade600,
-                              fontWeight: step['isDone']
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                            ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          step['title'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: step['isDone']
+                                ? Colors.black
+                                : Colors.grey.shade600,
+                            fontWeight: step['isDone']
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            step['description'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          step['description'],
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade500,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
+                  const Spacer(),
+                  step['title'] != 'Order Confirmed' &&
+                          order.status != 'completed'
+                      ? ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              Colors.deepPurple,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (step['title'] == order.deliveryPrograss) {
+                              return;
+                            }
+
+                            // Update progress first
+                            await cubit.updatePrograss(
+                              order.orderId,
+                              step['title'], // Use the target step's title
+                              order.userId,
+                            );
+
+                            // If this is the last step (Delivered), complete the order
+                            if (step['title'] == 'Delivered') {
+                              await cubit.completeOrder(
+                                order.orderId,
+                                order.userId,
+                              );
+                            }
+
+                            // Refresh data to update UI
+                            await cubit.getAllUserOrders();
+                          },
+                          child: Text(
+                            'update',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      : SizedBox(),
                 ],
               );
             }),
@@ -281,8 +350,14 @@ class _OrderTimeline extends StatelessWidget {
 
 class _AddressSection extends StatelessWidget {
   final String address;
+  final String orderId;
+  final String userId;
 
-  const _AddressSection({required this.address});
+  const _AddressSection({
+    required this.address,
+    required this.orderId,
+    required this.userId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -347,12 +422,13 @@ class _AddressSection extends StatelessWidget {
   }
 
   void _showEditAddressDialog(BuildContext context) {
+    final controller = TextEditingController(text: address);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text("Edit Delivery Address"),
         content: TextField(
-          controller: TextEditingController(text: address),
+          controller: controller,
           maxLines: 3,
           decoration: const InputDecoration(
             hintText: "Enter your delivery address",
@@ -361,16 +437,45 @@ class _AddressSection extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: () {
-              // Save address logic
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Address updated successfully")),
-              );
+            onPressed: () async {
+              final newAddress = controller.text.trim();
+              if (newAddress.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Address cannot be empty")),
+                );
+                return;
+              }
+
+              // Call cubit to update address; catch errors and show feedback
+              try {
+                // Update address directly in Firestore for the specified user/order
+                await FirebaseFirestore.instance
+                    .collection('orders')
+                    .doc(userId)
+                    .collection('Userorders')
+                    .doc(orderId)
+                    .update({'address': newAddress});
+
+                // Optionally refresh cubit data if available
+                try {
+                  final cubit = BlocProvider.of<CardOrderCubit>(context);
+                  await cubit.getAllUserOrders();
+                } catch (_) {}
+
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Address updated successfully")),
+                );
+              } catch (e) {
+                // Keep dialog open and show error
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to update address: $e')),
+                );
+              }
             },
             child: const Text("Save"),
           ),
