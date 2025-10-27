@@ -37,7 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else if (state is AuthsErrorState) {
           pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Authentication Failed')),
+            const SnackBar(content: Text('Register Failed')),
           );
         }
       },
