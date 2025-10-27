@@ -6,9 +6,23 @@ import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/core/utils/text_styles.dart';
 import 'package:bisky_shop/features/home/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/constants/size_responsive.dart';
 
-class ProductGrideScreen extends StatelessWidget {
+class ProductGrideScreen extends StatefulWidget {
   const ProductGrideScreen({super.key});
+
+  @override
+  State<ProductGrideScreen> createState() => _ProductGrideScreenState();
+}
+
+class _ProductGrideScreenState extends State<ProductGrideScreen> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +31,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'Watch',
         'price': '\$40',
         'image':
-            'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality Watch for fashion lovers.',
@@ -26,7 +40,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'Nike Shoes',
         'price': '\$430',
         'image':
-            'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=764',
+        'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80&w=764',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality Nike Shoes for sports enthusiasts.',
@@ -35,7 +49,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'Airpods',
         'price': '\$333',
         'image':
-            'https://images.unsplash.com/photo-1610438235354-a6ae5528385c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687',
+        'https://images.unsplash.com/photo-1610438235354-a6ae5528385c?auto=format&fit=crop&q=80&w=687',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality Airpods for music lovers.',
@@ -44,7 +58,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'Blover',
         'price': '\$300',
         'image':
-            'https://images.unsplash.com/photo-1562157873-818bc0726f68?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2127',
+        'https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&q=80&w=2127',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality Blover for fashion lovers.',
@@ -53,7 +67,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'TSHirt',
         'price': '\$500',
         'image':
-            'https://images.unsplash.com/photo-1523381294911-8d3cead13475?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170',
+        'https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&q=80&w=1170',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality TShirt for fashion lovers.',
@@ -62,16 +76,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'LG TV',
         'price': '\$330',
         'image':
-            'https://images.unsplash.com/photo-1717295248230-93ea71f48f92?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1228',
-        'rating': 4.3,
-        'reviews': 12,
-        'description': 'High quality LG TV for home entertainment.',
-      },
-      {
-        'title': 'LG TV',
-        'price': '\$330',
-        'image':
-            'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800',
+        'https://images.unsplash.com/photo-1717295248230-93ea71f48f92?auto=format&fit=crop&q=80&w=1228',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality LG TV for home entertainment.',
@@ -80,7 +85,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'Hoodie',
         'price': '\$50',
         'image':
-            'https://images.unsplash.com/photo-1615397587950-3cbb55f95b77?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687',
+        'https://images.unsplash.com/photo-1615397587950-3cbb55f95b77?auto=format&fit=crop&q=80&w=687',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality Hoodie for casual wear.',
@@ -89,7 +94,7 @@ class ProductGrideScreen extends StatelessWidget {
         'title': 'Jacket',
         'price': '\$400',
         'image':
-            'https://images.unsplash.com/photo-1619603364904-c0498317e145?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687',
+        'https://images.unsplash.com/photo-1619603364904-c0498317e145?auto=format&fit=crop&q=80&w=687',
         'rating': 4.3,
         'reviews': 12,
         'description': 'High quality Jacket for winter season.',
@@ -97,44 +102,104 @@ class ProductGrideScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.blackColor,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-
-        title: Text(AppStrings.products),
-        titleTextStyle: TextStyles.styleSize16.copyWith(
-          color: AppColors.blackColor,
-          fontWeight: FontWeight.bold,
-        ),
-        centerTitle: true,
-      ),
-
       body: Padding(
-        padding: AppConstants.badding16,
-        child: GridView.builder(
-          itemCount: products.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
-            // childAspectRatio: 0.8,
-          ),
-          itemBuilder: (context, index) {
-            var item = products[index];
-            return GestureDetector(
-              onTap: () {
-                pushTo(context, Routs.details, extra: item);
-              },
-              child: ProductCard(item: item),
-            );
-          },
+        padding: EdgeInsets.only(
+          top: Sizeresponsive.defaultSize! * 6,
+          bottom: Sizeresponsive.defaultSize! * 0.2,
+          left: Sizeresponsive.defaultSize! * 1.6,
+          right: Sizeresponsive.defaultSize! * 1.6,
+        ),
+        child: Column(
+          children: [
+            // 🔍 Search Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.search, color: Colors.grey[600]),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: "Search product...",
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 16),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  if (_controller.text.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        _controller.clear();
+                        setState(() {});
+                      },
+                      child: const Icon(Icons.cancel, color: Colors.black),
+                    ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: Sizeresponsive.defaultSize! * 1),
+
+            // 🟣 Results Row
+            if (_controller.text.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Results for "${_controller.text}"',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '6 Results Found',
+                    style: const TextStyle(
+                      color: Color(0xFF6055D8),
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+            SizedBox(height: Sizeresponsive.defaultSize! * 1),
+
+            // 🛍️ GridView
+            Expanded(
+              child: GridView.builder(
+                itemCount: products.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 20,
+                  crossAxisSpacing: 20,
+                  childAspectRatio: 0.9,
+                ),
+                itemBuilder: (context, index) {
+                  var item = products[index];
+                  return GestureDetector(
+                    onTap: () {
+                      pushTo(context, Routs.details, extra: item);
+                    },
+                    child: ProductCard(item: item),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

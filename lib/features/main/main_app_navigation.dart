@@ -6,6 +6,8 @@ import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../products/presentation/pages/product_gride_screen.dart';
+
 class MainAppNavigationScreen extends StatefulWidget {
   const MainAppNavigationScreen({super.key, required this.name});
   final String name;
@@ -24,7 +26,7 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
     super.initState();
     pages = [
       HomeScreen(name: widget.name),
-      Container(),
+      ProductGrideScreen(),
       CartScreen(),
       PersonScreen(),
     ];
