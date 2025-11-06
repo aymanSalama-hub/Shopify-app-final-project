@@ -1,77 +1,80 @@
-import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/core/utils/text_styles.dart';
+import 'package:bisky_shop/core/constants/size_responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.item});
+  final dynamic item;
 
-  final Map<String, dynamic> item;
+  const ProductCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
+    // نعبّي بيانات Sizeresponsive
+    Sizeresponsive().init(context);
+    final ds = Sizeresponsive.defaultSize!;
+    final sw = Sizeresponsive.screenWidth!;
+
     return Container(
-      width: 140,
+      width: sw * 0.4, // حوالي 40% من عرض الشاشة
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
         color: Colors.white,
+        borderRadius: BorderRadius.circular(ds * 2), // ≈16px
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black12,
+            blurRadius: ds * 0.5, // ≈4px
+            offset: Offset(0, ds * 0.25), // ≈2px
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-                child: Image.network(
-                  item['image'] ?? 'https://via.placeholder.com/150',
-                  height: 110,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+          // الصورة تاخد جزء كبير من الكارت
+          Expanded(
+            flex: 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(ds * 2)),
+              child: Image.network(
+                item.images[0],
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
-
-              const Positioned(
-                right: 8,
-                top: 8,
-                child: Icon(Icons.favorite_border, color: Colors.white),
-              ),
-            ],
+            ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item['title'] ?? "NoData",
-                  style: TextStyles.styleSize14.copyWith(
-                    fontWeight: FontWeight.bold,
+          // باقي التفاصيل
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: EdgeInsets.all(ds * 0.5), // ≈8px
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: ds * 1.5, // ≈12px
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-
-                const Gap(4),
-                Text(
-                  item['price'] ?? "NoData",
-                  style: TextStyles.styleSize12.copyWith(
-                    color: AppColors.primayColor,
+                  Gap(ds * 0.5), // ≈4px
+                  Text(
+                    "\$${item.price}",
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.bold,
+                      fontSize: ds * 1.5, // ≈12px
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
-} //class
+}

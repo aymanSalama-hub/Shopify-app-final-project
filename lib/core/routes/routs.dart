@@ -10,6 +10,8 @@ import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/place_order.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/track_order.dart';
 import 'package:bisky_shop/features/details/presentation/pages/product_details.dart';
+import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
+import 'package:bisky_shop/features/home/presentation/cubit/home_cubit.dart';
 import 'package:bisky_shop/features/main/main_app_navigation.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
 import 'package:bisky_shop/features/person/presentation/pages/settings_screen.dart';
@@ -59,7 +61,7 @@ class Routs {
       GoRoute(
         path: details,
         builder: (context, state) =>
-            ProductDetailsScreen(item: state.extra as Map<String, dynamic>),
+            ProductDetailsScreen(product: state.extra as ProductResponse),
       ),
 
       GoRoute(
@@ -94,7 +96,7 @@ class Routs {
         path: adminTrack,
         builder: (context, state) => BlocProvider(
           create: (context) => CardOrderCubit(),
-          child: AdminTrackOrderPage(order: state.extra as OrderModel,),
+          child: AdminTrackOrderPage(order: state.extra as OrderModel),
         ),
       ),
 
