@@ -62,4 +62,27 @@ class OrderModel {
       createdAt: createdAt,
     );
   }
+
+  /// Returns a copy of this OrderModel with updated fields
+  OrderModel copyWith({
+    String? orderId,
+    String? userId,
+    List<CartItemModel>? items,
+    double? totalPrice,
+    String? status,
+    String? deliveryPrograss,
+    String? address,
+    DateTime? createdAt,
+  }) {
+    return OrderModel(
+      orderId: orderId ?? this.orderId,
+      userId: userId ?? this.userId,
+      items: items ?? this.items,
+      totalPrice: totalPrice ?? this.totalPrice,
+      status: status ?? this.status,
+      deliveryPrograss: deliveryPrograss ?? this.deliveryPrograss,
+      address: address ?? this.address,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

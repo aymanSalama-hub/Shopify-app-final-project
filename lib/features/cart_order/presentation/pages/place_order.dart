@@ -40,16 +40,18 @@ class CheckoutScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0,
           title: const Text(
             'Checkout',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-            onPressed: () => pop(context),
-          ),
+
+          // leading: IconButton(
+          //   icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          //   onPressed: () => pop(context),
+          // ),
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

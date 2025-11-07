@@ -3,6 +3,7 @@ import 'package:bisky_shop/features/auth/presentation/cubit/auths_states.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitial());
@@ -30,6 +31,32 @@ class AuthCubit extends Cubit<AuthStates> {
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
+    } catch (e) {
+      emit(AuthsErrorState());
+      print(e);
+    }
+  }
+
+  loginWithGoogle() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    emit(AuthsLoadingState());
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
+      emit(AuthsSuccessState());
     } catch (e) {
       emit(AuthsErrorState());
       print(e);

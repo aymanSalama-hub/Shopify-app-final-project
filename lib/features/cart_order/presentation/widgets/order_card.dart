@@ -233,7 +233,12 @@ class OrderCard extends StatelessWidget {
                       if (role != 'Admin') {
                         pushTo(context, Routs.trackOrder, extra: order);
                       } else {
-                        pushTo(context, Routs.adminTrack, extra: order);
+                        Map<String, dynamic> orderData = {
+                          'orderId': order.orderId,
+                          'userId': order.userId,
+                        };
+
+                        pushTo(context, Routs.adminTrack, extra: orderData);
                       }
                     },
                     style: ElevatedButton.styleFrom(

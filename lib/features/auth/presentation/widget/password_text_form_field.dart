@@ -8,10 +8,16 @@ class PasswordTextFormField extends StatefulWidget {
     required this.controller,
     this.hintText,
     this.validator,
+    this.focusNode,
+    this.textInputAction,
+    this.onFieldSubmitted,
   });
   final TextEditingController? controller;
   final String? hintText;
   final String? Function(String?)? validator;
+  final FocusNode? focusNode;
+  final TextInputAction? textInputAction;
+  final Function(String)? onFieldSubmitted;
 
   @override
   State<PasswordTextFormField> createState() => _PasswordTextFormFieldState();
@@ -24,6 +30,8 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
     return TextFormField(
       controller: widget.controller,
       obscureText: _obscureText,
+      focusNode: widget.focusNode,
+      textInputAction: widget.textInputAction,
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(width: 2, color: Colors.grey[700]!),
@@ -48,6 +56,7 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
         ),
       ),
       validator: widget.validator,
+      onFieldSubmitted: widget.onFieldSubmitted,
     );
   }
 }

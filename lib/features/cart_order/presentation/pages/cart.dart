@@ -74,11 +74,9 @@ class CartScreen extends StatelessWidget {
         } else if (state is CardOrderError) {
           pop(context);
           final msg = state.message;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(msg)));
         }
       },
       builder: (context, state) {
@@ -169,8 +167,6 @@ class CartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           ElevatedButton(
-
-
             onPressed: cartItems.isEmpty
                 ? null
                 : () {
@@ -179,7 +175,7 @@ class CartScreen extends StatelessWidget {
 
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6C63FF),
-              minimumSize: const Size(double.infinity, 40),
+              minimumSize: const Size(double.infinity, 55),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),

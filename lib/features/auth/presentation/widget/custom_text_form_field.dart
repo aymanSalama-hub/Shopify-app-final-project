@@ -12,6 +12,11 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.readOnly = false,
+    this.focusNode,
+    this.prefixIcon,
+    this.textInputAction,
+    this.onFieldSubmitted,
+    
   });
   final TextEditingController? controller;
   final String? hintText;
@@ -21,14 +26,23 @@ class CustomTextFormField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final Function()? onTap;
   final bool readOnly;
+  final FocusNode? focusNode;
+  final Widget? prefixIcon;
+  final TextInputAction? textInputAction;
+  final Function(String)? onFieldSubmitted;
+  
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      focusNode: focusNode,
+      textInputAction: textInputAction,
       readOnly: readOnly,
       decoration: InputDecoration(
+        prefixIcon: prefixIcon,
+        
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(width: 2, color: Colors.grey[700]!),
           borderRadius: BorderRadius.circular(10),
@@ -41,6 +55,7 @@ class CustomTextFormField extends StatelessWidget {
         suffixIcon: suffixIcon,
       ),
       validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
       inputFormatters: inputFormatters,
       onTap: onTap,
     );

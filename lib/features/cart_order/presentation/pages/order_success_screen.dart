@@ -48,8 +48,12 @@ class OrderSuccessScreen extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Back to Home',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  'Back to card',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],

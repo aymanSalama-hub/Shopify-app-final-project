@@ -12,7 +12,20 @@
           "package_name": "com.example.bisky_shop"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "195987422545-qcoquvt0rnur3nc708d4a494p7skoe7s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bisky_shop",
+            "certificate_hash": "f9bd06a9d51fd5d1c4b5d5f8884afdf1e136bfe6"
+          }
+        },
+        {
+          "client_id": "195987422545-dv9s17ch25e56u22qq550jgnl3av5ll6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCs89rgBTg02u1bvWAzFtZ4CGa1gCHIEQw"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195987422545-dv9s17ch25e56u22qq550jgnl3av5ll6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "195987422545-cso93csrdj7q12gfua8bm5evhkntfc81.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.biskyShop"
+              }
+            }
+          ]
         }
       }
     }
