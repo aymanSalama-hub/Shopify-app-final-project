@@ -3,6 +3,7 @@ import 'package:bisky_shop/core/constants/app_strings.dart';
 import 'package:bisky_shop/core/constants/size_responsive.dart';
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
+import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/core/utils/text_styles.dart';
 import 'package:bisky_shop/features/home/presentation/cubit/home_cubit.dart';
 import 'package:bisky_shop/features/home/presentation/cubit/home_state.dart';
@@ -12,74 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key, required this.name});
   String name;
-
-  // final List<Map<String, dynamic>> featured = [
-  //   {
-  //     'title': 'Watch',
-  //     'price': '\$40',
-  //     'image':
-  //         'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
-  //     'rating': 4.5,
-  //     'reviews': 20,
-  //     'description': 'This is a watch with elegant design...',
-  //   },
-  //   {
-  //     'title': 'Nike Shoes',
-  //     'price': '\$430',
-  //     'image':
-  //         'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=764',
-
-  //     'rating': 4.8,
-  //     'reviews': 15,
-  //     'description': 'Comfortable and stylish Nike shoes.',
-  //   },
-
-  //   {
-  //     'title': 'Airpods',
-  //     'price': '\$333',
-  //     'image':
-  //         'https://images.unsplash.com/photo-1610438235354-a6ae5528385c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687',
-  //     'rating': 4.3,
-  //     'reviews': 12,
-  //     'description': 'High quality Airpods for music lovers.',
-  //   },
-  // ];
-
-  // final List<Map<String, dynamic>> popular = [
-  //   {
-  //     'title': 'LG TV',
-  //     'price': '\$330',
-  //     'image':
-  //         'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800',
-
-  //     'rating': 4.6,
-  //     'reviews': 18,
-  //     'description': 'High-definition LG TV for your home entertainment.',
-  //   },
-  //   {
-  //     'title': 'Hoodie',
-  //     'price': '\$50',
-  //     'image':
-  //         'https://images.unsplash.com/photo-1615397587950-3cbb55f95b77?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687',
-  //     'rating': 4.2,
-  //     'reviews': 22,
-  //     'description': 'Comfortable and stylish hoodie for everyday wear.',
-  //   },
-  //   {
-  //     'title': 'Jacket',
-  //     'price': '\$400',
-  //     'image':
-  //         'https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?w=800',
-
-  //     'rating': 4.7,
-  //     'reviews': 15,
-  //     'description': 'Warm and elegant jacket for all seasons.',
-  //   },
-  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -127,15 +65,24 @@ class HomeScreen extends StatelessWidget {
           builder: (context, state) {
             var cubit = context.read<HomeCubit>();
 
-            if (state is SuccessHomeState) {
-              return SafeArea(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      ds * 2.1,
-                      ds * 2.1,
-                      ds * 2.1,
-                      ds * 0.5,
+            // if (state is SuccessHomeState) {
+            return SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    ds * 2.1,
+                    ds * 2.1,
+                    ds * 2.1,
+                    ds * 0.5,
+                  ),
+                  child: Skeletonizer(
+                    enabled: state is! SuccessHomeState,
+                    effect: ShimmerEffect(
+                      baseColor: AppColors.backgroundColorCart,
+                      highlightColor: AppColors.lightGrayColor.withValues(
+                        alpha: .6,
+                      ),
+                      duration: Duration(seconds: 1),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,14 +172,15 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              );
-            } else if (state is ErrorHomeState) {
-              return Center(child: Text(state.message));
-            } else if (state is LoadingHomeSTate) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              return Center(child: Text("Loading"));
-            }
+              ),
+            );
+            // } //else if (state is ErrorHomeState) {
+            //   return Center(child: Text(state.message));
+            // } else if (state is LoadingHomeSTate) {
+            //   return Center(child: CircularProgressIndicator());
+            // } else {
+            //   return Center(child: Text("Loading"));
+            // }
           },
         ),
       ),

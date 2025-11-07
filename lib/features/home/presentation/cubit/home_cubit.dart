@@ -6,9 +6,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(InitialHomeState());
 
-  List<ProductResponse?>? productList = [];
-  List<ProductResponse?>? sliderProducts = [];
-
+  List<ProductResponse?>? productList = [
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+  ];
+  List<ProductResponse?>? sliderProducts = [
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+    ProductResponse.empty(),
+  ];
 
   fechHomeData() async {
     emit(LoadingHomeSTate());
@@ -17,7 +28,7 @@ class HomeCubit extends Cubit<HomeState> {
       if (productList != null && productList!.isNotEmpty) {
         // here slider list //
         if (productList!.length > 12) {
-          sliderProducts = productList!.sublist(7,12);
+          sliderProducts = productList!.sublist(7, 12);
         }
 
         emit(SuccessHomeState());

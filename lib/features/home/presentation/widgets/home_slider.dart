@@ -1,5 +1,5 @@
-import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/core/constants/size_responsive.dart';
+import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -30,12 +30,13 @@ class _HomeSliderState extends State<HomeSlider> {
       children: [
         CarouselSlider.builder(
           itemCount: widget.sliderList!.length,
-          itemBuilder:
-              (BuildContext context, int itemIndex, int pageViewIndex) {
+          itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(ds), // نسبي للحجم
               child: Image.network(
-                widget.sliderList![itemIndex]!.images[0],
+                widget.sliderList![itemIndex]!.images.isNotEmpty
+                    ? widget.sliderList![itemIndex]!.images[0]
+                    : "https://picsum.photos/200",
                 width: double.infinity,
                 height: sh * 0.25, // 25% من ارتفاع الشاشة
                 fit: BoxFit.cover,

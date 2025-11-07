@@ -91,29 +91,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             children: [
                               Text(
                                 widget.product.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                 maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 22,
+                                  
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-
+                          
                               Gap(10),
-
+                          
                               Row(
                                 children: [
-                                  Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                    size: 20,
-                                  ),
+                                  Icon(Icons.star, color: Colors.amber, size: 20),
                                   SizedBox(width: 4),
                                   Text(
                                     rating.toStringAsFixed(1),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   SizedBox(width: 4),
                                   Text("($reviews Reviews)"),
