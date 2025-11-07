@@ -1,12 +1,15 @@
+import 'dart:math';
+
 import 'package:bisky_shop/core/utils/app_colors.dart';
+import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key, required this.item});
+  const ProductDetailsScreen({super.key, required this.product});
 
-  final Map<String, dynamic> item;
+  final ProductResponse product;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -16,6 +19,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   bool isFavorite = false;
   int selectedSize = 0;
   final List<String> sizes = ["8", "10", "38", "40"];
+  final double rating = 3 + Random().nextDouble() * 2;
+  final int reviews = Random().nextInt(200);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +35,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     bottomRight: Radius.circular(30),
                   ),
                   child: Image.network(
-                    widget.item['image'] ?? 'https://via.placeholder.com/150',
+                    widget.product.images[0],
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -61,7 +66,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          // add to  favorit list 
+                          // add to  favorit list
                           isFavorite = !isFavorite;
                         });
                       },
@@ -80,36 +85,47 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          widget.item['title'] ?? '',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.product.title,
+                                 maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                          
+                              Gap(10),
+                          
+                              Row(
+                                children: [
+                                  Icon(Icons.star, color: Colors.amber, size: 20),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    rating.toStringAsFixed(1),
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text("($reviews Reviews)"),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
+
                         Text(
-                          " ${widget.item['price'] ?? 0}",
+                          "  \$${widget.product.price}",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.deepPurple,
                           ),
                         ),
-                      ],
-                    ),
-
-                    Gap(10),
-
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 20),
-                        SizedBox(width: 4),
-                        Text(
-                          "${widget.item['rating'] ?? 0}",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(width: 4),
-                        Text("  (${widget.item['reviews'] ?? 0} Reviews ) "),
                       ],
                     ),
 
@@ -124,7 +140,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     Gap(10),
                     Text(
-                      widget.item['description'] ?? '',
+                      widget.product.description,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.grey, height: 1.5),
@@ -208,7 +224,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                   ),
                   child: const Text(
-                    "Buy Now",
+                    "Add To Cart",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
