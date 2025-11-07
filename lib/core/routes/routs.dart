@@ -96,7 +96,9 @@ class Routs {
         path: adminTrack,
         builder: (context, state) => BlocProvider(
           create: (context) => CardOrderCubit(),
-          child: AdminTrackOrderPage(order: state.extra as OrderModel),
+
+          child: AdminTrackOrderPage(orderdetails: state.extra as Map),
+
         ),
       ),
 

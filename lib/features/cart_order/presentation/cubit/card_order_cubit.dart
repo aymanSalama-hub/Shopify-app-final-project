@@ -19,6 +19,16 @@ class CardOrderCubit extends Cubit<CardOrderState> {
   List<OrderModel> activeOrders = [];
   List<OrderModel> completedOrders = [];
   List<OrderModel> canceledOrders = [];
+  OrderModel order = OrderModel(
+    orderId: '',
+    userId: '',
+    items: [],
+    totalPrice: 0,
+    status: '',
+    deliveryPrograss: '',
+    address: '',
+    createdAt: DateTime.now(),
+  );
 
   Future<void> createOrder(
     List<CartItemModel> cartItems,
@@ -75,6 +85,31 @@ class CardOrderCubit extends Cubit<CardOrderState> {
           .doc(orderId)
           .update({'address': address});
       emit(CardOrderLoaded());
+    } catch (e) {
+      emit(CardOrderError(e.toString()));
+    }
+  }
+
+  Future<void> getorder(String orderId, String userId) async {
+    emit(CardOrderLoading());
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        emit(CardOrderError('You must be logged in to view the order.'));
+        return;
+      }
+      final orderSnapshot = await _firestore
+          .collection('orders')
+          .doc(userId)
+          .collection('Userorders')
+          .doc(orderId)
+          .get();
+      if (orderSnapshot.exists) {
+        order = OrderModel.fromMap(orderSnapshot.data()!);
+        emit(CardOrderLoaded());
+      } else {
+        emit(CardOrderError('Order not found.'));
+      }
     } catch (e) {
       emit(CardOrderError(e.toString()));
     }
@@ -209,6 +244,21 @@ class CardOrderCubit extends Cubit<CardOrderState> {
           .collection('Userorders')
           .doc(orderId)
           .update({'deliveryPrograss': prograss});
+      print(
+        'Updated deliveryPrograss in Firestore for $orderId (user: $userId) -> $prograss',
+      );
+      // Update in-memory model so UI updates immediately
+      try {
+        if (order.orderId == orderId) {
+          order = order.copyWith(deliveryPrograss: prograss);
+          print(
+            'Updated in-memory order deliveryPrograss to: ${order.deliveryPrograss}',
+          );
+        }
+      } catch (e) {
+        print('Error updating in-memory order: $e');
+      }
+
       emit(CardOrderLoaded());
     } catch (e) {
       emit(CardOrderError(e.toString()));
@@ -228,6 +278,24 @@ class CardOrderCubit extends Cubit<CardOrderState> {
           .collection('Userorders')
           .doc(orderId)
           .update({'status': 'completed'});
+      print(
+        'Updated order status to completed in Firestore for $orderId (user: $userId)',
+      );
+      // Update in-memory model so UI updates immediately
+      try {
+        if (order.orderId == orderId) {
+          order = order.copyWith(
+            status: 'completed',
+            deliveryPrograss: 'Delivered',
+          );
+          print(
+            'Updated in-memory order status/deliveryPrograss: ${order.status}/${order.deliveryPrograss}',
+          );
+        }
+      } catch (e) {
+        print('Error updating in-memory order: $e');
+      }
+
       emit(CardOrderLoaded());
     } catch (e) {
       emit(CardOrderError(e.toString()));

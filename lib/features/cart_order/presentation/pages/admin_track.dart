@@ -5,14 +5,37 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AdminTrackOrderPage extends StatelessWidget {
-  final OrderModel order;
+class AdminTrackOrderPage extends StatefulWidget {
+  const AdminTrackOrderPage({super.key, required this.orderdetails});
+  final Map orderdetails;
 
-  const AdminTrackOrderPage({super.key, required this.order});
+  @override
+  State<AdminTrackOrderPage> createState() => _AdminTrackOrderPageState();
+}
+
+class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
+  String get orderId1 => widget.orderdetails['orderId'];
+  String get userId1 => widget.orderdetails['userId'];
+  @override
+  void initState() {
+    super.initState();
+    print('=== AdminTrackOrderPage InitState ===');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('Post frame callback executing');
+      final cubit = context.read<CardOrderCubit>();
+      print('Cubit retrieved, calling getorder');
+      cubit.getorder(
+        widget.orderdetails['orderId'],
+        widget.orderdetails['userId'],
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     CardOrderCubit cubit = context.read<CardOrderCubit>();
+
     return BlocBuilder<CardOrderCubit, CardOrderState>(
       builder: (context, state) {
         if (state is CardOrderLoading) {
@@ -23,6 +46,14 @@ class AdminTrackOrderPage extends StatelessWidget {
         if (state is CardOrderError) {
           return Scaffold(body: Center(child: Text(state.message)));
         }
+
+        // Ensure order is loaded before displaying content
+        if (cubit.order.orderId.isEmpty) {
+          return const Scaffold(
+            body: Center(child: Text("Loading order details...")),
+          );
+        }
+
         return Scaffold(
           backgroundColor: const Color(0xfff7f7f7),
           appBar: AppBar(
@@ -47,19 +78,21 @@ class AdminTrackOrderPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _OrderInfoCard(order: order),
+                _OrderInfoCard(order: cubit.order),
                 const SizedBox(height: 20),
                 _OrderTimeline(
-                  order: order,
-                  status: order.status,
-                  deliveryPrograss: order.deliveryPrograss,
+                  order: cubit.order,
+                  status: cubit.order.status,
+                  deliveryPrograss: cubit.order.deliveryPrograss,
+                  orderId1: orderId1,
+                  userId1: userId1,
                   cubit: cubit,
                 ),
                 const SizedBox(height: 20),
                 _AddressSection(
-                  address: order.address,
-                  orderId: order.orderId,
-                  userId: order.userId,
+                  address: cubit.order.address,
+                  orderId: cubit.order.orderId,
+                  userId: cubit.order.userId,
                 ),
                 const SizedBox(height: 30),
                 _ContactButton(),
@@ -83,7 +116,7 @@ class _OrderInfoCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -174,12 +207,16 @@ class _OrderTimeline extends StatelessWidget {
   final OrderModel order;
   final String status;
   final String deliveryPrograss;
+  final String orderId1;
+  final String userId1;
   final CardOrderCubit cubit;
 
   _OrderTimeline({
     required this.order,
     required this.status,
     required this.deliveryPrograss,
+    required this.orderId1,
+    required this.userId1,
     required this.cubit,
   });
 
@@ -331,6 +368,7 @@ class _OrderTimeline extends StatelessWidget {
 
                             // Refresh data to update UI
                             await cubit.getAllUserOrders();
+                            await cubit.getorder(orderId1, userId1);
                           },
                           child: Text(
                             'update',

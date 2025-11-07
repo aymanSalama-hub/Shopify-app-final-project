@@ -4,7 +4,6 @@ import 'package:bisky_shop/core/constants/user_type.dart';
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/core/widgets/app_bar_with_back.dart';
 import 'package:bisky_shop/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:bisky_shop/features/auth/presentation/cubit/auths_states.dart';
 import 'package:bisky_shop/features/auth/presentation/widget/custom_text_form_field.dart';
@@ -36,14 +35,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           pushAndRemoveUntil(context, Routs.login);
         } else if (state is AuthsErrorState) {
           pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Register Failed')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Register Failed')));
         }
       },
       child: Scaffold(
         backgroundColor: AppColors.backgroundColorCart,
-        appBar: AppBarWithBack(context: context),
         body: SafeArea(
           child: Padding(
             padding: AppConstants.bodyPadding,
@@ -54,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Gap(30),
+                    const Gap(50),
 
                     /// 🔹 Illustration
 
