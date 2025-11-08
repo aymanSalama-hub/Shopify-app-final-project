@@ -61,7 +61,7 @@ class Routs {
       GoRoute(
         path: details,
         builder: (context, state) =>
-            ProductDetailsScreen(product: state.extra as ProductResponse),
+            ProductDetailsScreen(product: state.extra as ProductResponse3),
       ),
 
       GoRoute(

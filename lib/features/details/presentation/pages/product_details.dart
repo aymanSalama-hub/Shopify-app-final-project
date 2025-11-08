@@ -9,7 +9,7 @@ import 'package:gap/gap.dart';
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key, required this.product});
 
-  final ProductResponse product;
+  final ProductResponse3 product;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -35,7 +35,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     bottomRight: Radius.circular(30),
                   ),
                   child: Image.network(
-                    widget.product.images![0],
+                    (widget.product.image != null &&
+                        widget.product.image!.isNotEmpty)
+                        ? widget.product.image!
+                        : "https://picsum.photos/200",
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -96,7 +99,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.product.title,
+                                widget.product.title??'No Data',
                                  maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -125,7 +128,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
 
                         Text(
-                          "  \$${widget.product.price}",
+                          "  \$${widget.product.price??0}",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -146,7 +149,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     Gap(10),
                     Text(
-                      widget.product.description,
+                      widget.product.description??'NO Data',
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.grey, height: 1.5),

@@ -18,8 +18,6 @@ class ProductGrideScreen extends StatefulWidget {
 class _ProductGrideScreenState extends State<ProductGrideScreen> {
   @override
   Widget build(BuildContext context) {
-
-
     return BlocProvider(
       create: (context) => HomeCubit()..fechHomeData(),
       child: Scaffold(
@@ -30,36 +28,56 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
             left: Sizeresponsive.defaultSize! * 1.6,
             right: Sizeresponsive.defaultSize! * 1.6,
           ),
-          child: Column(
-            children: [
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) {
+              final cubit = context.read<HomeCubit>();
 
-              Expanded(
-                child: BlocBuilder<HomeCubit, HomeState>(
-                  builder: (context, state) {
-                    var cubit = context.read<HomeCubit>();
-                    return GridView.builder(
-                      itemCount: cubit.productList!.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 20,
-                            crossAxisSpacing: 20,
-                            childAspectRatio: 0.9,
-                          ),
-                      itemBuilder: (context, index) {
-                        var product = cubit.productList![index];
-                        return GestureDetector(
-                          onTap: () {
-                            pushTo(context, Routs.details, extra: product);
-                          },
-                          child: ProductCard(item: product),
-                        );
-                      },
-                    );
-                  },
+              // ✅ حالة التحميل
+              if (state is LoadingHomeSTate) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              // ✅ حالة الخطأ
+              if (state is ErrorHomeState) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                );
+              }
+
+              // ✅ البيانات جاهزة
+              if (cubit.productList == null || cubit.productList!.isEmpty) {
+                return const Center(
+                  child: Text(
+                    "No products available.",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                );
+              }
+
+              return GridView.builder(
+                itemCount: cubit.productList!.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 20,
+                  crossAxisSpacing: 20,
+                  childAspectRatio: 0.9,
                 ),
-              ),
-            ],
+                itemBuilder: (context, index) {
+                  var product = cubit.productList![index];
+                  return GestureDetector(
+                    onTap: () {
+                      pushTo(context, Routs.details, extra: product);
+                    },
+                    child: ProductCard(item: product),
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
