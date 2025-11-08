@@ -1,19 +1,19 @@
 import 'dart:developer';
 
 import 'package:bisky_shop/core/services/api_endpoints.dart';
-import 'package:bisky_shop/core/services/dio_provider.dart';
+import 'package:bisky_shop/core/services/dio_provider2.dart';
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 
 class HomeRepo {
-  static Future<List<ProductResponse?>?> getFeature() async {
+  static Future<List<ProductResponse3?>?> getFeature2() async {
     try {
-      var res = await DioProvider.get(endpoint: ApiEndpoints.product);
+      var res = await DioProvider2.get(endpoint: ApiEndpoints2.product2);
 
       if (res.statusCode == 200) {
-        List<ProductResponse>? listData = [];
+        List<ProductResponse3>? listData = [];
 
         for (var i in res.data) {
-          listData.add(ProductResponse.fromJson(i));
+          listData.add(ProductResponse3.fromJson(i));
         }
         print(
           "=======================================================================",
@@ -29,18 +29,5 @@ class HomeRepo {
     }
   }
 
-  // static Future<SliderResponse?> getSlider() async {
-  //   try {
-  //     var res = await DioProvider.get(endpoint: ApiEndpoints.sliders);
 
-  //     if (res.statusCode == 200) {
-  //       return SliderResponse.fromJson(res.data);
-  //     } else {
-  //       return null;
-  //     }
-  //   } on Exception catch (e) {
-  //     log(e.toString());
-  //     return null;
-  //   }
-  // }
 }

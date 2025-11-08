@@ -1,4 +1,6 @@
-class ApiEndpoints {
-  static const String baseUrl = 'https://api.escuelajs.co/api/v1';
-  static const String product = '/products';
+class ApiEndpoints2 {
+  static const String baseUrl2 = 'https://fakestoreapi.com';
+  static const String product2 ='/products';
+
+
 }

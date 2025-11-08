@@ -35,7 +35,6 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           elevation: 0,
           title: TextField(
             controller: _controller,
-            autofocus: true,
             decoration: const InputDecoration(
               hintText: 'Discover your Product...',
               border: InputBorder.none,
@@ -59,26 +58,42 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           padding: EdgeInsets.all(Sizeresponsive.defaultSize! * 1.5),
           child: BlocBuilder<HomeCubit, HomeState>(
             builder: (context, state) {
-              var cubit = context.read<HomeCubit>();
+              final cubit = BlocProvider.of<HomeCubit>(context);
 
+              if (state is LoadingHomeSTate) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-              var filteredList = cubit.productList!
-                  .where((p) =>
-                  p!.title!.toLowerCase().contains(_controller.text.toLowerCase()))
-                  .toList();
+              if (state is ErrorHomeState) {
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+
+              final products = cubit.productList ?? [];
+
+              final filteredList = products.where((p) {
+                final title = p?.title?.toLowerCase() ?? '';
+                return title.contains(_controller.text.toLowerCase());
+              }).toList();
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (_controller.text.isNotEmpty)
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: Sizeresponsive.defaultSize! * 1),
+                      padding: EdgeInsets.symmetric(
+                          vertical: Sizeresponsive.defaultSize! * 1),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             'Results for "${_controller.text}"',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           Text(
                             '${filteredList.length} Results Found',
@@ -92,12 +107,8 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                       ),
                     ),
                   const SizedBox(height: 10),
-
-
                   Expanded(
-                    child: state is LoadingHomeSTate
-                        ? const Center(child: CircularProgressIndicator())
-                        : filteredList.isEmpty
+                    child: filteredList.isEmpty
                         ? Center(
                       child: Text(
                         _controller.text.isEmpty
@@ -116,7 +127,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         childAspectRatio: 0.9,
                       ),
                       itemBuilder: (context, index) {
-                        var product = filteredList[index];
+                        final product = filteredList[index];
                         return GestureDetector(
                           onTap: () {
                             pushTo(context, Routs.details, extra: product);

@@ -9,7 +9,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 class HomeSlider extends StatefulWidget {
   const HomeSlider({super.key, required this.sliderList});
 
-  final List<ProductResponse?>? sliderList;
+  final List<ProductResponse3?>? sliderList;
 
   @override
   State<HomeSlider> createState() => _HomeSliderState();
@@ -32,11 +32,11 @@ class _HomeSliderState extends State<HomeSlider> {
           itemCount: widget.sliderList!.length,
           itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
             return ClipRRect(
-              borderRadius: BorderRadius.circular(ds), // نسبي للحجم
+              borderRadius: BorderRadius.circular(ds),
               child: Image.network(
-                widget.sliderList![itemIndex]!.images!.isNotEmpty
-                    ? widget.sliderList![itemIndex]!.images![0]
-                    : '',
+                (widget.sliderList?[itemIndex]?.image ?? "").isNotEmpty
+                    ? widget.sliderList![itemIndex]!.image!
+                    : "https://picsum.photos/200",
                 width: double.infinity,
                 height: sh * 0.25,
                 fit: BoxFit.cover,
@@ -53,7 +53,7 @@ class _HomeSliderState extends State<HomeSlider> {
             );
           },
           options: CarouselOptions(
-            height: sh * 0.25, // نفس ارتفاع الصورة
+            height: sh * 0.25,
             viewportFraction: 1,
             initialPage: activeIndex,
             enableInfiniteScroll: true,

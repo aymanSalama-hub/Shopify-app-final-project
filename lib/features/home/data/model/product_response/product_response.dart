@@ -1,69 +1,60 @@
-class ProductResponse {
-  final int id;
-  final String title;
-  final double price;
-  final String description;
-  final List<String> ?images;
-  final Category category;
 
-  ProductResponse({
-    required this.id,
-    required this.title,
-    required this.price,
-    required this.description,
-    required this.images,
-    required this.category,
+class ProductResponse3 {
+  int? id;
+  String? title;
+  double? price;
+  String? description;
+  String? category;
+  String? image;
+  Rating? rating;
+
+  ProductResponse3({
+    this.id,
+    this.title,
+    this.price,
+    this.description,
+    this.category,
+    this.image,
+    this.rating,
   });
 
-  factory ProductResponse.fromJson(Map<String, dynamic> json) {
-    return ProductResponse(
-      id: json['id'] ?? 0,
-      title: json['title'] ?? '',
-      price: (json['price'] is num) ? (json['price'] as num).toDouble() : 0.0,
-      description: json['description'] ?? '',
-      images: (json['images'] != null)
-          ? List<String>.from(json['images'])
-          : [],
-      category: (json['category'] != null)
-          ? Category.fromJson(json['category'])
-          : Category.empty(),
+  factory ProductResponse3.fromJson(Map<String, dynamic> json) {
+    return ProductResponse3(
+      id: json['id'] as int?,
+      title: json['title'] as String?,
+      price: (json['price'] as num?)?.toDouble(),
+      description: json['description'] as String?,
+      category: json['category'] as String?,
+      image: json['image'] as String?,
+      rating: json['rating'] == null
+          ? null
+          : Rating.fromJson(json['rating'] as Map<String, dynamic>),
     );
   }
 
-  /// 🟣 نسخة فاضية من الكلاس (مفيدة في الـ Skeletonizer أو الـ loading)
-  factory ProductResponse.empty() {
-    return ProductResponse(
-      id: 0,
-      title: '',
-      price: 0.0,
-      description: '',
-      images: [],
-      category: Category.empty(),
-    );
-  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'price': price,
+    'description': description,
+    'category': category,
+    'image': image,
+    'rating': rating?.toJson(),
+  };
 }
 
-class Category {
-  final int id;
-  final String name;
-  final String image;
 
-  Category({
-    required this.id,
-    required this.name,
-    required this.image,
-  });
 
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      image: json['image'] ?? '',
-    );
-  }
+class Rating {
+  double? rate;
+  int? count;
 
-  /// 🟣 نسخة فاضية من الكاتيجوري
-  factory Category.empty() {
-    return Category(id: 0, name: '', image: '');
-  }
+  Rating({this.rate, this.count});
+
+  factory Rating.fromJson(Map<String, dynamic> json) => Rating(
+    rate: (json['rate'] as num?)?.toDouble(),
+    count: json['count'] as int?,
+  );
+
+  Map<String, dynamic> toJson() => {'rate': rate, 'count':count};
 }

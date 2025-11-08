@@ -35,9 +35,9 @@ class ProductCard extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(ds * 2)),
               child: Image.network(
-                item.images.isNotEmpty && item.images[0].isNotEmpty
-                    ? item.images[0]
-                    : '',
+                (item.image != null && item.image!.isNotEmpty)
+                    ? item.image!
+                    : "https://picsum.photos/200",
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
