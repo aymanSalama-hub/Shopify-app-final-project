@@ -35,10 +35,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     bottomRight: Radius.circular(30),
                   ),
                   child: Image.network(
-                    widget.product.images[0],
+                    widget.product.images![0],
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/notfound.png',
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
 
@@ -66,7 +72,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          // add to  favorit list
+
                           isFavorite = !isFavorite;
                         });
                       },

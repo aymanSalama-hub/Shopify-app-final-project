@@ -12,8 +12,10 @@ class HomeCubit extends Cubit<HomeState> {
     ProductResponse.empty(),
     ProductResponse.empty(),
     ProductResponse.empty(),
+    ProductResponse.empty(),
   ];
   List<ProductResponse?>? sliderProducts = [
+    ProductResponse.empty(),
     ProductResponse.empty(),
     ProductResponse.empty(),
     ProductResponse.empty(),

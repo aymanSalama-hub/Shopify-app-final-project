@@ -94,20 +94,11 @@ class PersonScreen extends StatelessWidget {
               onTap: () {},
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: CustomTextFieldButton(
-              text: 'favorit',
-              icon: Icons.favorite,
-              onTap: () {},
-            ),
-          ),
           const SizedBox(height: 140),
           Center(
             child: GestureDetector(
               onTap: () {
-                // signout action
-              },
+                pushTo(context, Routs.login);              },
               child: Text(
                 'signout',
                 style: TextStyle(

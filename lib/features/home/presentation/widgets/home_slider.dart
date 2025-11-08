@@ -34,13 +34,22 @@ class _HomeSliderState extends State<HomeSlider> {
             return ClipRRect(
               borderRadius: BorderRadius.circular(ds), // نسبي للحجم
               child: Image.network(
-                widget.sliderList![itemIndex]!.images.isNotEmpty
-                    ? widget.sliderList![itemIndex]!.images[0]
-                    : "https://picsum.photos/200",
+                widget.sliderList![itemIndex]!.images!.isNotEmpty
+                    ? widget.sliderList![itemIndex]!.images![0]
+                    : '',
                 width: double.infinity,
-                height: sh * 0.25, // 25% من ارتفاع الشاشة
+                height: sh * 0.25,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/images/notfound.png',
+                    width: double.infinity,
+                    height: sh * 0.25,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
+
             );
           },
           options: CarouselOptions(

@@ -3,7 +3,7 @@ class ProductResponse {
   final String title;
   final double price;
   final String description;
-  final List<String> images;
+  final List<String> ?images;
   final Category category;
 
   ProductResponse({

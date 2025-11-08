@@ -103,7 +103,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const Gap(16),
 
-                    /// 🔹 Password Field
                     PasswordTextFormField(
                       controller: cubit.password,
                       hintText: AppStrings.passwordHint,
@@ -112,7 +111,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const Gap(16),
 
-                    /// 🔹 Confirm Password Field
                     PasswordTextFormField(
                       controller: cubit.confirmPassword,
                       hintText: AppStrings.passwordConfirmation,
