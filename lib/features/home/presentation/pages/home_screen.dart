@@ -85,8 +85,9 @@ class HomeScreen extends StatelessWidget {
                       enabled: state is! SuccessHomeState,
                       effect: ShimmerEffect(
                         baseColor: AppColors.backgroundColorCart,
-                        highlightColor:
-                        AppColors.lightGrayColor.withValues(alpha: .6),
+                        highlightColor: AppColors.lightGrayColor.withValues(
+                          alpha: .6,
+                        ),
                         duration: const Duration(seconds: 1),
                       ),
                       child: Column(
@@ -98,13 +99,15 @@ class HomeScreen extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  const ProductSearchScreen(),
+                                      const ProductSearchScreen(),
                                 ),
                               );
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 12),
+                                horizontal: 10,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(30),
@@ -116,7 +119,9 @@ class HomeScreen extends StatelessWidget {
                                   Text(
                                     "Discover your Product...",
                                     style: TextStyle(
-                                        color: Colors.grey[600], fontSize: 16),
+                                      color: Colors.grey[600],
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -133,7 +138,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           Gap(ds * 1.2),
-
+                          // featured
                           SizedBox(
                             height: ds * 20,
                             child: ListView.separated(
@@ -142,7 +147,7 @@ class HomeScreen extends StatelessWidget {
                               separatorBuilder: (context, index) =>
                                   Gap(ds * 1.6),
                               itemBuilder: (context, index) {
-                                final product = cubit.productList![index];
+                                final product = cubit.featuredList5![index];
                                 return GestureDetector(
                                   onTap: () {
                                     pushTo(
@@ -191,7 +196,7 @@ class HomeScreen extends StatelessWidget {
                               separatorBuilder: (context, index) =>
                                   Gap(ds * 1.6),
                               itemBuilder: (context, index) {
-                                final item = cubit.productList![index];
+                                final item = cubit.mostPopularTop5![index];
                                 return GestureDetector(
                                   onTap: () {
                                     pushTo(context, Routs.details, extra: item);

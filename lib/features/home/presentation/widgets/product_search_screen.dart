@@ -73,7 +73,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                 );
               }
 
-              final products = cubit.productList ?? [];
+              final products = cubit.productList3 ?? [];
 
               final filteredList = products.where((p) {
                 final title = p?.title?.toLowerCase() ?? '';
