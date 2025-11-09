@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:bisky_shop/core/routes/navigation.dart';
+import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:flutter/material.dart';
@@ -275,19 +277,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             Gap(12),
 
-            Container(
-              height: 55,
-              width: 55,
-              decoration: BoxDecoration(
-                color: AppColors.whiteColor,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons/lock.svg',
-                  color: AppColors.lightGrayColor,
-                  width: 24,
-                  height: 24,
+            InkWell(
+              onTap: () {
+                pushTo(context, Routs.cart);
+              },
+              child: Container(
+                height: 55,
+                width: 55,
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/lock.svg',
+                    color: AppColors.lightGrayColor,
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ),
