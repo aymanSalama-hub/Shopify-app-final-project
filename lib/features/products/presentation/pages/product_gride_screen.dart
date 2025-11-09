@@ -34,9 +34,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
 
               // ✅ حالة التحميل
               if (state is LoadingHomeSTate) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               // ✅ حالة الخطأ
@@ -50,7 +48,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
               }
 
               // ✅ البيانات جاهزة
-              if (cubit.productList == null || cubit.productList!.isEmpty) {
+              if (cubit.productList3 == null || cubit.productList3!.isEmpty) {
                 return const Center(
                   child: Text(
                     "No products available.",
@@ -60,7 +58,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
               }
 
               return GridView.builder(
-                itemCount: cubit.productList!.length,
+                itemCount: cubit.productList3!.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 20,
@@ -68,7 +66,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                   childAspectRatio: 0.9,
                 ),
                 itemBuilder: (context, index) {
-                  var product = cubit.productList![index];
+                  var product = cubit.productList3![index];
                   return GestureDetector(
                     onTap: () {
                       pushTo(context, Routs.details, extra: product);

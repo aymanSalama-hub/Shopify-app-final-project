@@ -29,13 +29,12 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Expanded(
             flex: 3,
             child: ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(ds * 2)),
               child: Image.network(
-                (item.image != null && item.image!.isNotEmpty)
+                (item?.image is String && item.image!.isNotEmpty)
                     ? item.image!
                     : "https://picsum.photos/200",
                 width: double.infinity,
@@ -51,7 +50,6 @@ class ProductCard extends StatelessWidget {
             ),
           ),
 
-
           Expanded(
             flex: 2,
             child: Padding(
@@ -60,7 +58,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item.title,
+                    item.title ?? "No Data",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: ds * 1.5, // ≈12px
@@ -70,7 +68,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   Gap(ds * 0.5), // ≈4px
                   Text(
-                    "\$${item.price}",
+                    "\$${item.price ?? 0}",
                     style: TextStyle(
                       color: Colors.deepPurple,
                       fontWeight: FontWeight.bold,
