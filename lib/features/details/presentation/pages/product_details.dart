@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:bisky_shop/core/routes/navigation.dart';
+import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,7 @@ import 'package:gap/gap.dart';
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({super.key, required this.product});
 
-  final ProductResponse product;
+  final ProductResponse3 product;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -21,8 +23,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   final List<String> sizes = ["8", "10", "38", "40"];
   final double rating = 3 + Random().nextDouble() * 2;
   final int reviews = Random().nextInt(200);
+
   @override
   Widget build(BuildContext context) {
+    // 🔹 تعديل نهائي: المقارنة باستخدام 'clothing' لتغطية كل الملابس
+    bool isClothes =
+        widget.product.category != null &&
+        widget.product.category!.toLowerCase().contains('clothing');
+
+    // 🔹 Debug (اختياري للتأكد)
+    print('Category from API: "${widget.product.category}"');
+    print('isClothes = $isClothes');
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -35,10 +47,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     bottomRight: Radius.circular(30),
                   ),
                   child: Image.network(
-                    widget.product.images[0],
+                    (widget.product.image != null &&
+                            widget.product.image!.isNotEmpty)
+                        ? widget.product.image!
+                        : "https://picsum.photos/200",
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/notfound.png',
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
 
@@ -66,7 +87,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          // add to  favorit list
                           isFavorite = !isFavorite;
                         });
                       },
@@ -90,25 +110,30 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.product.title,
-                                 maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                widget.product.title ?? 'No Data',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 22,
-                                  
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                          
+
                               Gap(10),
-                          
+
                               Row(
                                 children: [
-                                  Icon(Icons.star, color: Colors.amber, size: 20),
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 20,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     rating.toStringAsFixed(1),
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   SizedBox(width: 4),
                                   Text("($reviews Reviews)"),
@@ -119,7 +144,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
 
                         Text(
-                          "  \$${widget.product.price}",
+                          "  \$${widget.product.price ?? 0}",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -140,7 +165,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     Gap(10),
                     Text(
-                      widget.product.description,
+                      widget.product.description ?? 'NO Data',
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.grey, height: 1.5),
@@ -157,43 +182,59 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     Gap(10),
 
+                    // 🔹 مربعات الحجم تظهر دايمًا، متاحة فقط للملابس
                     Row(
                       children: List.generate(
                         sizes.length,
                         (index) => Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedSize = index;
-                              });
-                            },
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: selectedSize == index
-                                      ? Colors.deepPurple
-                                      : Colors.grey.shade300,
-                                  width: 2,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: isClothes
+                                    ? () {
+                                        setState(() {
+                                          selectedSize = index;
+                                        });
+                                      }
+                                    : null,
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: isClothes && selectedSize == index
+                                          ? Colors.deepPurple
+                                          : Colors.grey.shade300,
+                                      width: 2,
+                                    ),
+                                    color: selectedSize == index && isClothes
+                                        ? Colors.deepPurple.withOpacity(0.1)
+                                        : Colors.transparent,
+                                  ),
+                                  child: Text(
+                                    sizes[index],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isClothes
+                                          ? (selectedSize == index
+                                                ? Colors.deepPurple
+                                                : Colors.black)
+                                          : Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                                color: selectedSize == index
-                                    ? Colors.deepPurple.withOpacity(0.1)
-                                    : Colors.transparent,
                               ),
-                              child: Text(
-                                sizes[index],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: selectedSize == index
-                                      ? Colors.deepPurple
-                                      : Colors.black,
+                              if (!isClothes)
+                                Icon(
+                                  Icons.lock,
+                                  size: 18,
+                                  color: Colors.grey.shade600,
                                 ),
-                              ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
@@ -236,19 +277,24 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             Gap(12),
 
-            Container(
-              height: 55,
-              width: 55,
-              decoration: BoxDecoration(
-                color: AppColors.whiteColor,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons/lock.svg',
-                  color: AppColors.lightGrayColor,
-                  width: 24,
-                  height: 24,
+            InkWell(
+              onTap: () {
+                pushTo(context, Routs.cart);
+              },
+              child: Container(
+                height: 55,
+                width: 55,
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/lock.svg',
+                    color: AppColors.lightGrayColor,
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ),

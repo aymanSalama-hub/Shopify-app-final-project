@@ -3,11 +3,11 @@
 import 'package:bisky_shop/core/services/api_endpoints.dart';
 import 'package:dio/dio.dart';
 
-class DioProvider {
+class DioProvider2 {
   static late Dio dio;
 
   static init() {
-    dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl));
+    dio = Dio(BaseOptions(baseUrl: ApiEndpoints2.baseUrl2));
   }
 
   static Future<Response> post({

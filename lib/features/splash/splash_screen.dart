@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/orientation_util.dart';
 import '../../core/constants/size_responsive.dart';
 import '../../core/routes/routs.dart';
@@ -28,16 +29,13 @@ class _SplashBodyState extends State<SplashBody>
       duration: const Duration(seconds: 4),
     );
 
-
     _fadeLogo = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6, curve: Curves.easeIn)),
     );
 
-
     _fadeText = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: const Interval(0.3, 1.0, curve: Curves.easeInOut)),
     );
-
 
     _scaleLogo = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
@@ -50,8 +48,22 @@ class _SplashBodyState extends State<SplashBody>
     });
 
     Future.delayed(const Duration(seconds: 4), () {
-      context.go(Routs.onboarding);
+      _checkNavigation();
     });
+  }
+
+  Future<void> _checkNavigation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (!seenOnboarding) {
+      context.go(Routs.onboarding);
+    } else if (!isLoggedIn) {
+      context.go(Routs.login);
+    } else {
+      context.go(Routs.mainAppNavigation);
+    }
   }
 
   @override

@@ -11,6 +11,7 @@ import 'package:bisky_shop/features/auth/presentation/widget/social_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,11 +36,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     var cubit = context.read<AuthCubit>();
     return BlocListener<AuthCubit, AuthStates>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is AuthsLoadingState) {
           showdialog(context);
         } else if (state is AuthsSuccessState) {
           pop(context);
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isLoggedIn', true);
+
           if (cubit.role == 'Admin') {
             pushAndRemoveUntil(context, Routs.order);
           } else {
@@ -204,23 +209,23 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: state is AuthsLoadingState
                 ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withOpacity(0.8),
-                      ),
-                    ),
-                  )
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.white.withOpacity(0.8),
+                ),
+              ),
+            )
                 : const Text(
-                    AppStrings.login,
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+              AppStrings.login,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
         );
       },
@@ -265,7 +270,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _performLogin(AuthCubit cubit) {
     if (formKey.currentState!.validate()) {
-      // Unfocus keyboard when submitting
       FocusScope.of(context).unfocus();
       cubit.login();
     }
