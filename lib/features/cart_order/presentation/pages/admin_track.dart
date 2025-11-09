@@ -36,15 +36,24 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
   Widget build(BuildContext context) {
     CardOrderCubit cubit = context.read<CardOrderCubit>();
 
-    return BlocBuilder<CardOrderCubit, CardOrderState>(
+    return BlocConsumer<CardOrderCubit, CardOrderState>(
+      listener: (context, state) {
+        // Force a rebuild of this StatefulWidget when the cubit finishes loading
+        if (state is CardOrderLoaded) {
+          // sometimes the UI doesn't update due to rebuild rules; ensure a repaint
+          setState(() {});
+        }
+        if (state is CardOrderError) {
+          // show error as SnackBar
+          final msg = state.message;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        }
+      },
       builder: (context, state) {
         if (state is CardOrderLoading) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
-        }
-        if (state is CardOrderError) {
-          return Scaffold(body: Center(child: Text(state.message)));
         }
 
         // Ensure order is loaded before displaying content
