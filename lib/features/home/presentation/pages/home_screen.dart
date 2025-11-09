@@ -163,6 +163,7 @@ class HomeScreen extends StatelessWidget {
                           ),
 
                           Gap(ds * 2.6),
+                         
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -188,6 +189,7 @@ class HomeScreen extends StatelessWidget {
                             ],
                           ),
                           Gap(ds * 2.0),
+                           // most popular
                           SizedBox(
                             height: ds * 20,
                             child: ListView.separated(
