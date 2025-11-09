@@ -1,11 +1,12 @@
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:bisky_shop/features/home/data/repo/home_repo.dart';
 import 'package:bisky_shop/features/home/presentation/cubit/home_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(InitialHomeState());
-
+  String name = '';
   List<ProductResponse3?>? productList3 = [
     ProductResponse3(),
     ProductResponse3(),
@@ -44,8 +45,20 @@ class HomeCubit extends Cubit<HomeState> {
     ProductResponse3(),
     ProductResponse3(),
   ];
+  getNameUser() {
+    emit(LoadingHomeSTate());
+    try {
+      final _auth = FirebaseAuth.instance;
+      name = _auth.currentUser!.displayName!;
+      emit(SuccessHomeState());
+    } catch (e) {
+      emit(ErrorHomeState(message: e.toString()));
+    }
+  }
+
   fechHomeData() async {
     emit(LoadingHomeSTate());
+    getNameUser();
 
     try {
       productList3 = await HomeRepo.getFeature2();

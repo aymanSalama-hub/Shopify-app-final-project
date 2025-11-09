@@ -1,129 +1,150 @@
-import 'package:bisky_shop/core/constants/app_images.dart';
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/features/cart_order/data/model/model_cart.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
 import 'package:bisky_shop/features/cart_order/presentation/widgets/cart_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CartScreen extends StatelessWidget {
-  CartScreen({super.key});
+class CartScreen extends StatefulWidget {
+  const CartScreen({super.key});
 
-  final List<CartItemModel> cartItems = [
-    CartItemModel(
-      id: '',
-      title: 'Watch',
-      brand: 'Rolex',
-      price: 40,
-      quantity: 2,
-      imageUrl: AppImages.product,
-    ),
-    CartItemModel(
-      id: '',
-      title: 'Airpods',
-      brand: 'Apple',
-      price: 333,
-      quantity: 2,
-      imageUrl: AppImages.product1,
-    ),
-    CartItemModel(
-      id: '',
-      title: 'Hoodie',
-      brand: 'Puma',
-      price: 50,
-      quantity: 2,
-      imageUrl: AppImages.product2,
-    ),
-  ];
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
 
-  final double discount = 4.0;
-  final double delivery = 2.0;
+class _CartScreenState extends State<CartScreen> {
+  late final CardOrderCubit _cubit;
+  bool _isLoading = false;
 
-  double get subtotal =>
-      cartItems.fold(0, (sum, item) => sum + (item.price * item.quantity!));
+  @override
+  void initState() {
+    super.initState();
+    _cubit = CardOrderCubit()..watchCart();
+  }
 
-  double get total => subtotal - discount + delivery;
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var cubit = context.read<CardOrderCubit>();
-    return BlocConsumer<CardOrderCubit, CardOrderState>(
-      buildWhen: (s, c) {
-        return c is IncreaseQuantitySuccess;
-      },
-      listener: (context, state) {
-        if (state is CardOrderLoading) {
-          showdialog(context);
-        } else if (state is CardOrderLoaded) {
-          pop(context);
-          pushTo(
-            context,
-            Routs.checkout,
-            extra: {
-              'orderId': cubit.orderId1,
-              'totalItems': cartItems.length,
-              'subtotal': subtotal,
-              'discount': discount,
-              'delivery': delivery,
-              'total': total, // Add the total value
-            },
-          );
-        } else if (state is CardOrderError) {
-          pop(context);
-          final msg = state.message;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(msg)));
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          backgroundColor: AppColors.backgroundColorCart,
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: AppColors.whiteColor,
-            title: const Text(
-              'Cart',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocConsumer<CardOrderCubit, CardOrderState>(
+        // No buildWhen: allow BlocConsumer to rebuild on all relevant cart/order states
+        listener: (context, state) {
+          var cubit = context.read<CardOrderCubit>();
+          // show loading dialog on loading states
+          if (state is CardOrderLoading || state is CardItemLoading) {
+            if (!_isLoading) {
+              _isLoading = true;
+              showdialog(context);
+            }
+          }
+
+          // when cart items loaded, ensure the widget rebuilds to show items
+          if (state is CardItemLoaded) {
+            if (_isLoading) {
+              _isLoading = false;
+              pop(context);
+            }
+            // force a rebuild in this StatefulWidget so UI updates immediately
+            setState(() {});
+          }
+
+          // when order created, navigate to checkout
+          if (state is CardOrderLoaded) {
+            if (_isLoading) {
+              _isLoading = false;
+              pop(context);
+            }
+            pushTo(
+              context,
+              Routs.checkout,
+              extra: {
+                'orderId': cubit.orderId1,
+                'totalItems': cubit.cartItems.length,
+                'subtotal': cubit.subtotal,
+                'discount': cubit.discount,
+                'delivery': cubit.delivery,
+                'total': cubit.total,
+              },
+            );
+          }
+
+          // show errors
+          if (state is CardOrderError || state is CardItemError) {
+            pop(context);
+            final msg = state is CardOrderError
+                ? state.message
+                : (state as CardItemError).message;
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(msg)));
+          }
+        },
+        builder: (context, state) {
+          var cubit = context.read<CardOrderCubit>();
+          print(cubit.cartItems.length);
+
+          // Handle specific cubit states explicitly so UI updates predictably
+
+          if (state is CardItemError) {
+            return Scaffold(body: Center(child: Text((state).message)));
+          }
+
+          if (state is CardOrderError) {
+            return Scaffold(body: Center(child: Text((state).message)));
+          }
+
+          // Default: show cart content
+          return Scaffold(
+            backgroundColor: AppColors.backgroundColorCart,
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: AppColors.whiteColor,
+              title: const Text(
+                'Cart',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          body: cartItems.isEmpty
-              ? _buildEmptyCartState()
-              : Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: cartItems.length,
-                        itemBuilder: (context, index) {
-                          final item = cartItems[index];
-                          return CartItemWidget(
-                            item: item,
-                            onIncrease: () =>
-                                cubit.increaseQuantity(item, index),
-                            onDecrease: () =>
-                                cubit.decreaseQuantity(cartItems, item, index),
-                            onRemove: () => cubit.removeItem(cartItems, index),
-                          );
-                        },
+            body: cubit.cartItems.isEmpty
+                ? _buildEmptyCartState()
+                : Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: cubit.cartItems.length,
+                          itemBuilder: (context, index) {
+                            final item = cubit.cartItems[index];
+                            return CartItemWidget(
+                              item: item,
+                              onIncrease: () => cubit.increaseQuantity(item.id),
+                              onDecrease: () => cubit.decreaseQuantity(item.id),
+                              onRemove: () => cubit.removeItem(item.id),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    _buildSummary(context, cubit),
-                  ],
-                ),
-        );
-      },
+                      _buildSummary(context, cubit),
+                    ],
+                  ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildSummary(BuildContext context, CardOrderCubit cubit) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -145,32 +166,39 @@ class CartScreen extends StatelessWidget {
           const SizedBox(height: 5),
           _buildSummaryRow(
             'Items',
-            cartItems.isEmpty ? '0' : '${cartItems.length}',
+            cubit.cartItems.isEmpty ? '0' : '${cubit.cartItems.length}',
           ),
           _buildSummaryRow(
             'Subtotal',
-            cartItems.isEmpty ? '0' : '\$${subtotal.toStringAsFixed(2)}',
+            cubit.cartItems.isEmpty
+                ? '0'
+                : '\$${cubit.subtotal.toStringAsFixed(2)}',
           ),
           _buildSummaryRow(
             'Discount',
-            cartItems.isEmpty ? '0' : '-\$${discount.toStringAsFixed(2)}',
+            cubit.cartItems.isEmpty
+                ? '0'
+                : '-\$${cubit.discount.toStringAsFixed(2)}',
           ),
           _buildSummaryRow(
             'Delivery Charges',
-            cartItems.isEmpty ? '0' : '\$${delivery.toStringAsFixed(2)}',
+            cubit.cartItems.isEmpty
+                ? '0'
+                : '\$${cubit.delivery.toStringAsFixed(2)}',
           ),
           const Divider(),
           _buildSummaryRow(
             'Total',
-            '\$${total.toStringAsFixed(2)}',
+            '\$${cubit.total.toStringAsFixed(2)}',
             isBold: true,
           ),
           const SizedBox(height: 6),
           ElevatedButton(
-            onPressed: cartItems.isEmpty
+            onPressed: cubit.cartItems.isEmpty
                 ? null
                 : () {
-                    cubit.createOrder(cartItems, total);
+                    cubit.createOrder(cubit.cartItems, cubit.total);
+                    cubit.removeAllItems();
                   },
 
             style: ElevatedButton.styleFrom(
@@ -219,36 +247,35 @@ class CartScreen extends StatelessWidget {
 }
 
 Widget _buildEmptyCartState() {
-  return Expanded(
-    child: Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Empty cart illustration
-            Icon(
-              Icons.shopping_cart_outlined,
-              size: 100,
-              color: Color(0xFF6C63FF),
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Empty cart illustration
+          Icon(
+            Icons.shopping_cart_outlined,
+            size: 100,
+            color: Color(0xFF6C63FF),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Your cart is empty',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Your cart is empty',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Looks like you haven\'t added any items to your cart yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[500]),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Looks like you haven\'t added any items to your cart yet',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+          ),
+        ],
       ),
     ),
   );

@@ -9,9 +9,9 @@ import 'package:bisky_shop/features/cart_order/presentation/pages/order_success_
 import 'package:bisky_shop/features/cart_order/presentation/pages/orders.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/place_order.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/track_order.dart';
+import 'package:bisky_shop/features/details/presentation/cubit/addCart_cubit.dart';
 import 'package:bisky_shop/features/details/presentation/pages/product_details.dart';
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
-import 'package:bisky_shop/features/home/presentation/cubit/home_cubit.dart';
 import 'package:bisky_shop/features/main/main_app_navigation.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
 import 'package:bisky_shop/features/person/presentation/pages/settings_screen.dart';
@@ -47,9 +47,7 @@ class Routs {
         path: mainAppNavigation,
         builder: (context, state) => BlocProvider(
           create: (context) => CardOrderCubit(),
-          child: MainAppNavigationScreen(
-            name: (state.extra as String?) ?? 'ahmed',
-          ),
+          child: MainAppNavigationScreen(name: (state.extra as String?) ?? ''),
         ),
       ),
 
@@ -60,17 +58,13 @@ class Routs {
 
       GoRoute(
         path: details,
-        builder: (context, state) =>
-            ProductDetailsScreen(product: state.extra as ProductResponse3),
-      ),
-
-      GoRoute(
-        path: cart,
         builder: (context, state) => BlocProvider(
-          create: (context) => CardOrderCubit(),
-          child: CartScreen(),
+          create: (context) => AddcartCubit(),
+          child: ProductDetailsScreen(product: state.extra as ProductResponse3),
         ),
       ),
+
+      GoRoute(path: cart, builder: (context, state) => CartScreen()),
 
       GoRoute(
         path: checkout,
@@ -98,7 +92,6 @@ class Routs {
           create: (context) => CardOrderCubit(),
 
           child: AdminTrackOrderPage(orderdetails: state.extra as Map),
-
         ),
       ),
 

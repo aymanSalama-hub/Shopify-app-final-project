@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bisky_shop/features/cart_order/data/model/model_cart.dart';
 import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
@@ -9,6 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CardOrderCubit extends Cubit<CardOrderState> {
   CardOrderCubit() : super(CardOrderInitial());
 
+  List<CartItemModel> cartItems = [];
+  StreamSubscription? _cartSubscription;
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   var addressController = TextEditingController();
@@ -29,6 +33,52 @@ class CardOrderCubit extends Cubit<CardOrderState> {
     address: '',
     createdAt: DateTime.now(),
   );
+  final double discount = 4.0;
+  final double delivery = 2.0;
+  double get subtotal {
+    return cartItems.fold(
+      0,
+      (sumitems, item) => sumitems + (item.price * item.quantity!),
+    );
+  }
+
+  double get total {
+    return subtotal - discount + delivery;
+  }
+
+  Future<void> getCartItems() async {
+    emit(CardItemLoading());
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        emit(CardOrderError('You must be logged in to view the cart.'));
+        return;
+      }
+
+      final userId = user.uid;
+
+      // CORRECTED: Match the collection structure from your addToCart method
+      final querySnapshot = await _firestore
+          .collection('users') // Changed from 'cart'
+          .doc(userId)
+          .collection('cart') // Changed from 'UserCart'
+          .get();
+
+      cartItems = querySnapshot.docs.map((doc) {
+        return CartItemModel.fromMap(doc.data());
+      }).toList();
+
+      // Optional: Debug output to verify structure
+      print(
+        '🛒 Retrieved ${cartItems.length} cart items from users/$userId/cart/',
+      );
+      print('Cart items: $cartItems');
+
+      emit(CardItemLoaded());
+    } catch (e) {
+      emit(CardItemError('Failed to load cart items: ${e.toString()}'));
+    }
+  }
 
   Future<void> createOrder(
     List<CartItemModel> cartItems,
@@ -302,9 +352,26 @@ class CardOrderCubit extends Cubit<CardOrderState> {
     }
   }
 
-  void increaseQuantity(CartItemModel item, int index) {
-    item.quantity = (item.quantity ?? 0) + 1;
-    emit(IncreaseQuantitySuccess());
+  void increaseQuantity(String productId) async {
+    emit(CardItemLoading());
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('cart')
+            .doc(productId)
+            .update({'quantity': FieldValue.increment(1)});
+
+        emit(CardItemLoaded());
+      } else {
+        emit(CardItemError());
+      }
+    } catch (e) {
+      emit(CardItemError(e.toString()));
+    }
+    await getCartItems();
   }
 
   /// Change the current orders tab and notify listeners
@@ -314,22 +381,126 @@ class CardOrderCubit extends Cubit<CardOrderState> {
     emit(CardOrderLoaded());
   }
 
-  void decreaseQuantity(
-    List<CartItemModel> cartItems,
-    CartItemModel item,
-    int index,
-  ) {
-    if ((item.quantity ?? 0) > 1) {
-      item.quantity = (item.quantity ?? 0) - 1;
-    } else {
-      // Optional: remove item if quantity = 0
-      cartItems.removeAt(index);
+  /// Start watching the cart collection for real-time updates
+  Future<void> watchCart() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      emit(CardOrderError('You must be logged in to view the cart.'));
+      return;
     }
-    emit(IncreaseQuantitySuccess());
+
+    try {
+      // Cancel any existing subscription
+      await _cartSubscription?.cancel();
+
+      // Start a new subscription
+      _cartSubscription = _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('cart')
+          .snapshots()
+          .listen(
+            (snapshot) {
+              try {
+                cartItems = snapshot.docs.map((doc) {
+                  return CartItemModel.fromMap(doc.data());
+                }).toList();
+
+                print('🛒 Cart updated: ${cartItems.length} items');
+                emit(CardItemLoaded());
+              } catch (e) {
+                print('Error parsing cart items: $e');
+                emit(CardItemError('Failed to parse cart items'));
+              }
+            },
+            onError: (error) {
+              print('Error watching cart: $error');
+              emit(CardItemError('Failed to watch cart: $error'));
+            },
+          );
+    } catch (e) {
+      print('Failed to start cart watcher: $e');
+      emit(CardItemError('Failed to start watching cart'));
+    }
   }
 
-  void removeItem(List<CartItemModel> cartItems, int index) {
-    cartItems.removeAt(index);
-    emit(IncreaseQuantitySuccess());
+  @override
+  Future<void> close() async {
+    await _cartSubscription?.cancel();
+    return super.close();
+  }
+
+  void decreaseQuantity(String productId) async {
+    emit(CardItemLoading());
+
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final cartItem = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('cart')
+            .doc(productId)
+            .get();
+        final currentQuantity = cartItem.data()?['quantity'] ?? 1;
+        if (currentQuantity > 1) {
+          await _firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('cart')
+              .doc(productId)
+              .update({'quantity': FieldValue.increment(-1)});
+        }
+
+        emit(CardItemLoaded());
+      } else {
+        emit(CardItemError());
+      }
+    } catch (e) {
+      emit(CardItemError(e.toString()));
+    }
+    await getCartItems();
+  }
+
+  void removeItem(String productId) async {
+    emit(CardItemLoading());
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('cart')
+            .doc(productId)
+            .delete();
+
+        emit(CardItemLoaded());
+      } else {
+        emit(CardItemError());
+      }
+    } catch (e) {
+      emit(CardItemError(e.toString()));
+    }
+    await getCartItems();
+  }
+
+  removeAllItems() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final cartCollection = _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('cart');
+
+        final cartItemsSnapshot = await cartCollection.get();
+        for (var doc in cartItemsSnapshot.docs) {
+          await doc.reference.delete();
+        }
+      }
+    } catch (e) {
+      emit(CardItemError(e.toString()));
+    }
+    await getCartItems();
   }
 }

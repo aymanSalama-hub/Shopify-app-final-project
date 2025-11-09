@@ -138,7 +138,7 @@ class OrderCard extends StatelessWidget {
                     topLeft: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
                   ),
-                  child: Image.asset(
+                  child: Image.network(
                     firstItem.imageUrl.isNotEmpty
                         ? firstItem.imageUrl
                         : AppImages.product,

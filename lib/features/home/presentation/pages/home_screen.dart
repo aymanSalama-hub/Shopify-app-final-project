@@ -31,41 +31,43 @@ class HomeScreen extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => HomeCubit()..fechHomeData(),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Row(
-            children: [
-              CircleAvatar(
-                radius: ds * 2.2,
-                backgroundImage: const NetworkImage(
-                  'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=80&q=80',
-                ),
-              ),
-              Gap(ds * 1.1),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          var cubit = context.read<HomeCubit>();
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Row(
                 children: [
-                  Text("Hello!", style: TextStyles.styleSize12),
-                  Gap(ds * 0.5),
-                  Text(name, style: TextStyles.styleSize14),
+                  CircleAvatar(
+                    radius: ds * 2.2,
+                    backgroundImage: const NetworkImage(
+                      'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=80&q=80',
+                    ),
+                  ),
+                  Gap(ds * 1.1),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Hello!", style: TextStyles.styleSize12),
+                      Gap(ds * 0.5),
+                      Text(
+                        name == '' ? cubit.name : 'User',
+                        style: TextStyles.styleSize14,
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: SvgPicture.asset(AppImages.notificationSvg),
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: SvgPicture.asset(AppImages.notificationSvg),
+                ),
+              ],
             ),
-          ],
-        ),
 
-        body: BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) {
-            var cubit = context.read<HomeCubit>();
-
-            return SafeArea(
+            body: SafeArea(
               child: RefreshIndicator(
                 color: AppColors.primayColor,
                 backgroundColor: Colors.white,
@@ -163,7 +165,7 @@ class HomeScreen extends StatelessWidget {
                           ),
 
                           Gap(ds * 2.6),
-                         
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -189,7 +191,7 @@ class HomeScreen extends StatelessWidget {
                             ],
                           ),
                           Gap(ds * 2.0),
-                           // most popular
+                          // most popular
                           SizedBox(
                             height: ds * 20,
                             child: ListView.separated(
@@ -215,9 +217,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
