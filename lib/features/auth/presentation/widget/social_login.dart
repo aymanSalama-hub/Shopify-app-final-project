@@ -25,7 +25,11 @@ class SocialLogin extends StatelessWidget {
             showdialog(context);
           } else if (state is AuthsSuccessState) {
             pop(context);
-            pushAndRemoveUntil(context, Routs.mainAppNavigation);
+            pushAndRemoveUntil(
+              context,
+              Routs.mainAppNavigation,
+              extra: cubit.name.text,
+            );
           } else if (state is AuthsErrorState) {
             pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
