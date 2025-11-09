@@ -21,8 +21,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   final List<String> sizes = ["8", "10", "38", "40"];
   final double rating = 3 + Random().nextDouble() * 2;
   final int reviews = Random().nextInt(200);
+
   @override
   Widget build(BuildContext context) {
+    // 🔹 تعديل نهائي: المقارنة باستخدام 'clothing' لتغطية كل الملابس
+    bool isClothes =
+        widget.product.category != null &&
+        widget.product.category!.toLowerCase().contains('clothing');
+
+    // 🔹 Debug (اختياري للتأكد)
+    print('Category from API: "${widget.product.category}"');
+    print('isClothes = $isClothes');
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -36,7 +46,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                   child: Image.network(
                     (widget.product.image != null &&
-                        widget.product.image!.isNotEmpty)
+                            widget.product.image!.isNotEmpty)
                         ? widget.product.image!
                         : "https://picsum.photos/200",
                     height: 300,
@@ -75,7 +85,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-
                           isFavorite = !isFavorite;
                         });
                       },
@@ -99,25 +108,30 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.product.title??'No Data',
-                                 maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                widget.product.title ?? 'No Data',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 22,
-                                  
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                          
+
                               Gap(10),
-                          
+
                               Row(
                                 children: [
-                                  Icon(Icons.star, color: Colors.amber, size: 20),
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 20,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     rating.toStringAsFixed(1),
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   SizedBox(width: 4),
                                   Text("($reviews Reviews)"),
@@ -128,7 +142,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
 
                         Text(
-                          "  \$${widget.product.price??0}",
+                          "  \$${widget.product.price ?? 0}",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -149,7 +163,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     Gap(10),
                     Text(
-                      widget.product.description??'NO Data',
+                      widget.product.description ?? 'NO Data',
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.grey, height: 1.5),
@@ -166,43 +180,59 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     Gap(10),
 
+                    // 🔹 مربعات الحجم تظهر دايمًا، متاحة فقط للملابس
                     Row(
                       children: List.generate(
                         sizes.length,
                         (index) => Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedSize = index;
-                              });
-                            },
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: selectedSize == index
-                                      ? Colors.deepPurple
-                                      : Colors.grey.shade300,
-                                  width: 2,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: isClothes
+                                    ? () {
+                                        setState(() {
+                                          selectedSize = index;
+                                        });
+                                      }
+                                    : null,
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: isClothes && selectedSize == index
+                                          ? Colors.deepPurple
+                                          : Colors.grey.shade300,
+                                      width: 2,
+                                    ),
+                                    color: selectedSize == index && isClothes
+                                        ? Colors.deepPurple.withOpacity(0.1)
+                                        : Colors.transparent,
+                                  ),
+                                  child: Text(
+                                    sizes[index],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isClothes
+                                          ? (selectedSize == index
+                                                ? Colors.deepPurple
+                                                : Colors.black)
+                                          : Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                                color: selectedSize == index
-                                    ? Colors.deepPurple.withOpacity(0.1)
-                                    : Colors.transparent,
                               ),
-                              child: Text(
-                                sizes[index],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: selectedSize == index
-                                      ? Colors.deepPurple
-                                      : Colors.black,
+                              if (!isClothes)
+                                Icon(
+                                  Icons.lock,
+                                  size: 18,
+                                  color: Colors.grey.shade600,
                                 ),
-                              ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
