@@ -39,16 +39,43 @@ class AuthCubit extends Cubit<AuthStates> {
 
   loginWithGoogle() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    // Configure Google Sign-In to force account selection
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: ['email', 'profile'],
+      signInOption: SignInOption.standard, // Force account picker
+    );
+
     emit(AuthsLoadingState());
+
     try {
+      // First, sign out to clear any cached account
+      await _googleSignIn.signOut();
+      await _auth.signOut();
+
+      // Add a small delay to ensure complete sign-out
+      await Future.delayed(Duration(milliseconds: 500));
+
+      // Force account selection by using signIn() instead of silent sign-in
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+
+      if (googleUser == null) {
+        emit(AuthsErrorState());
+        return;
+      }
+
+      name.text = googleUser.displayName ?? '';
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
+      if (googleAuth.idToken == null) {
+        emit(AuthsErrorState());
+        print('Google authentication failed - no ID token');
+        return;
+      }
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
@@ -56,10 +83,12 @@ class AuthCubit extends Cubit<AuthStates> {
       UserCredential userCredential = await _auth.signInWithCredential(
         credential,
       );
+
       emit(AuthsSuccessState());
+      print('Successfully signed in with: ${googleUser.email}');
     } catch (e) {
       emit(AuthsErrorState());
-      print(e);
+      print('Google Sign-In Error: $e');
     }
   }
 
