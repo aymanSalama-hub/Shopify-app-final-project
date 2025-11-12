@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(InitialHomeState());
   String name = '';
+  String photoUrl = '';
   List<ProductResponse3?>? productList3 = [
     ProductResponse3(),
     ProductResponse3(),
@@ -55,6 +56,7 @@ class HomeCubit extends Cubit<HomeState> {
           .doc(auth)
           .get();
       name = firestore['name'];
+      photoUrl = firestore['photoURL'];
 
       emit(SuccessHomeState());
     } catch (e) {
