@@ -55,6 +55,7 @@ dependencies:
   flutter_spinkit: ^5.2.0
 
   skeletonizer: ^2.1.0+1
+  image_picker: ^1.2.0
 
 
 

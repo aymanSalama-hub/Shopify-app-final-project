@@ -8,39 +8,67 @@ class TrackOrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final isMediumScreen = screenWidth < 600;
+
     return Scaffold(
       backgroundColor: const Color(0xfff7f7f7),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+            size: isSmallScreen ? 20 : 24,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Track Order',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: isSmallScreen ? 16 : 18,
+          ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _OrderInfoCard(order: order),
-            const SizedBox(height: 20),
-            _OrderTimeline(
-              status: order.status,
-              deliveryPrograss: order.deliveryPrograss,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _OrderInfoCard(order: order, isSmallScreen: isSmallScreen),
+                    SizedBox(height: isSmallScreen ? 12 : 20),
+                    _OrderTimeline(
+                      status: order.status,
+                      deliveryPrograss: order.deliveryPrograss,
+                      isSmallScreen: isSmallScreen,
+                    ),
+                    SizedBox(height: isSmallScreen ? 12 : 20),
+                    _AddressSection(
+                      address: order.address,
+                      isSmallScreen: isSmallScreen,
+                    ),
+                    const Spacer(),
+                    Padding(
+                      padding: EdgeInsets.only(top: isSmallScreen ? 20 : 30),
+                      child: _ContactButton(isSmallScreen: isSmallScreen),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
-            _AddressSection(address: order.address),
-            const SizedBox(height: 30),
-            _ContactButton(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -48,55 +76,69 @@ class TrackOrderPage extends StatelessWidget {
 
 class _OrderInfoCard extends StatelessWidget {
   final OrderModel order;
+  final bool isSmallScreen;
 
-  const _OrderInfoCard({required this.order});
+  const _OrderInfoCard({required this.order, required this.isSmallScreen});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+      ),
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(11),
+        padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Order #${order.orderId}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.deepPurple,
+            // Header Row - Responsive layout
+            isSmallScreen
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: Text(
+                          "Order #${order.orderId}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isSmallScreen ? 16 : 18,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: _buildStatusChip(order.status),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Order #${order.orderId}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isSmallScreen ? 16 : 18,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatusChip(order.status),
+                    ],
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(order.status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _getStatusColor(order.status),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    order.status.toUpperCase(),
-                    style: TextStyle(
-                      color: _getStatusColor(order.status),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+            SizedBox(height: isSmallScreen ? 12 : 16),
             _buildInfoRow("Order Date:", _formatDate(order.createdAt)),
             _buildInfoRow("Items:", "${order.items.length} items"),
             _buildInfoRow("Delivery Progress:", order.deliveryPrograss),
@@ -104,16 +146,25 @@ class _OrderInfoCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Total Amount:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                Flexible(
+                  child: Text(
+                    "Total Amount:",
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-                Text(
-                  "EGP ${order.totalPrice.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                Flexible(
+                  child: Text(
+                    "EGP ${order.totalPrice.toStringAsFixed(2)}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 16 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
                   ),
                 ),
               ],
@@ -124,19 +175,65 @@ class _OrderInfoCard extends StatelessWidget {
     );
   }
 
+  Widget _buildStatusChip(String status) {
+    return Container(
+      constraints: BoxConstraints(minWidth: isSmallScreen ? 60 : 70),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 8 : 12,
+        vertical: isSmallScreen ? 4 : 6,
+      ),
+      decoration: BoxDecoration(
+        color: _getStatusColor(status).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _getStatusColor(status), width: 1),
+      ),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          status.toUpperCase(),
+          maxLines: 1,
+          style: TextStyle(
+            color: _getStatusColor(status),
+            fontSize: isSmallScreen ? 10 : 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 3 : 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          Flexible(
+            flex: 2,
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: isSmallScreen ? 12 : 14,
+              ),
+            ),
           ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          const SizedBox(width: 8),
+          Flexible(
+            flex: 3,
+            child: Text(
+              value,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: isSmallScreen ? 12 : 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
@@ -147,8 +244,13 @@ class _OrderInfoCard extends StatelessWidget {
 class _OrderTimeline extends StatelessWidget {
   final String status;
   final String deliveryPrograss;
+  final bool isSmallScreen;
 
-  const _OrderTimeline({required this.status, required this.deliveryPrograss});
+  const _OrderTimeline({
+    required this.status,
+    required this.deliveryPrograss,
+    required this.isSmallScreen,
+  });
 
   List<Map<String, dynamic>> get _steps {
     return [
@@ -185,91 +287,109 @@ class _OrderTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+      ),
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(isSmallScreen ? 12 : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Order Timeline",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: isSmallScreen ? 16 : 18,
+              ),
             ),
-            const SizedBox(height: 16),
-            ..._steps.map((step) {
-              final index = _steps.indexOf(step);
+            SizedBox(height: isSmallScreen ? 12 : 16),
+            ..._steps.asMap().entries.map((entry) {
+              final index = entry.key;
+              final step = entry.value;
               final isLast = index == _steps.length - 1;
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: step['isDone']
-                              ? _getStatusColor(status)
-                              : Colors.grey.shade300,
-                          shape: BoxShape.circle,
-                          border: Border.all(
+              return ConstrainedBox(
+                constraints: BoxConstraints(minHeight: isSmallScreen ? 70 : 80),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          width: isSmallScreen ? 20 : 24,
+                          height: isSmallScreen ? 20 : 24,
+                          decoration: BoxDecoration(
                             color: step['isDone']
                                 ? _getStatusColor(status)
-                                : Colors.grey.shade400,
-                            width: 2,
-                          ),
-                        ),
-                        child: step['isDone']
-                            ? const Icon(
-                                Icons.check,
-                                size: 14,
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
-                      if (!isLast)
-                        Container(
-                          width: 2,
-                          height: 60,
-                          color: step['isDone']
-                              ? _getStatusColor(status)
-                              : Colors.grey.shade300,
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            step['title'],
-                            style: TextStyle(
-                              fontSize: 16,
+                                : Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                            border: Border.all(
                               color: step['isDone']
-                                  ? Colors.black
-                                  : Colors.grey.shade600,
-                              fontWeight: step['isDone']
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
+                                  ? _getStatusColor(status)
+                                  : Colors.grey.shade400,
+                              width: 2,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            step['description'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
+                          child: step['isDone']
+                              ? Icon(
+                                  Icons.check,
+                                  size: isSmallScreen ? 12 : 14,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
+                        if (!isLast)
+                          Container(
+                            width: 2,
+                            height: isSmallScreen ? 50 : 60,
+                            color: step['isDone']
+                                ? _getStatusColor(status)
+                                : Colors.grey.shade300,
                           ),
-                        ],
+                      ],
+                    ),
+                    SizedBox(width: isSmallScreen ? 12 : 16),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          bottom: isSmallScreen ? 16 : 20,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              step['title'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 14 : 16,
+                                color: step['isDone']
+                                    ? Colors.black
+                                    : Colors.grey.shade600,
+                                fontWeight: step['isDone']
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              step['description'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 10 : 12,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }),
           ],
@@ -281,22 +401,26 @@ class _OrderTimeline extends StatelessWidget {
 
 class _AddressSection extends StatelessWidget {
   final String address;
+  final bool isSmallScreen;
 
-  const _AddressSection({required this.address});
+  const _AddressSection({required this.address, required this.isSmallScreen});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+      ),
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(isSmallScreen ? 12 : 20),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: isSmallScreen ? 32 : 40,
+              height: isSmallScreen ? 32 : 40,
               decoration: BoxDecoration(
                 color: Colors.red.shade50,
                 shape: BoxShape.circle,
@@ -304,39 +428,54 @@ class _AddressSection extends StatelessWidget {
               child: Icon(
                 Icons.location_on,
                 color: Colors.red.shade600,
-                size: 20,
+                size: isSmallScreen ? 16 : 20,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: isSmallScreen ? 12 : 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Delivery Address",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: isSmallScreen ? 6 : 8),
                   Text(
                     address,
-                    style: const TextStyle(
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 14,
+                      fontSize: isSmallScreen ? 12 : 14,
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: isSmallScreen ? 6 : 8),
+                  Text(
                     "Phone: +20 100 123 4567",
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: isSmallScreen ? 10 : 12,
+                    ),
                   ),
                 ],
               ),
             ),
             IconButton(
-              icon: Icon(Icons.edit, color: Colors.grey.shade600, size: 20),
+              icon: Icon(
+                Icons.edit,
+                color: Colors.grey.shade600,
+                size: isSmallScreen ? 18 : 20,
+              ),
               onPressed: () {
-                // Edit address functionality
                 _showEditAddressDialog(context);
               },
             ),
@@ -347,76 +486,154 @@ class _AddressSection extends StatelessWidget {
   }
 
   void _showEditAddressDialog(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Edit Delivery Address"),
-        content: TextField(
-          controller: TextEditingController(text: address),
-          maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: "Enter your delivery address",
-            border: OutlineInputBorder(),
+      builder: (context) => Dialog(
+        insetPadding: EdgeInsets.all(isSmallScreen ? 12 : 20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
+        ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: screenWidth * 0.9,
+            maxHeight: screenWidth * 0.8,
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Edit Delivery Address",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 16 : 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: isSmallScreen ? 12 : 16),
+                Expanded(
+                  child: TextField(
+                    controller: TextEditingController(text: address),
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      hintText: "Enter your delivery address",
+                      border: const OutlineInputBorder(),
+                      contentPadding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                    ),
+                  ),
+                ),
+                SizedBox(height: isSmallScreen ? 16 : 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          "Cancel",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: isSmallScreen ? 8 : 12),
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Address updated successfully",
+                                style: TextStyle(
+                                  fontSize: isSmallScreen ? 14 : 16,
+                                ),
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.all(isSmallScreen ? 8 : 16),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Save",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Save address logic
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Address updated successfully")),
-              );
-            },
-            child: const Text("Save"),
-          ),
-        ],
       ),
     );
   }
 }
 
 class _ContactButton extends StatelessWidget {
-  const _ContactButton();
+  final bool isSmallScreen;
+
+  const _ContactButton({required this.isSmallScreen});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+          SizedBox(
+            width: isSmallScreen ? double.infinity : null,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: isSmallScreen ? 24 : 32,
+                  vertical: isSmallScreen ? 12 : 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 2,
               ),
-              elevation: 2,
-            ),
-            onPressed: () {
-              _showContactOptions(context);
-            },
-            icon: const Icon(Icons.support_agent, size: 20),
-            label: const Text(
-              "Contact Support",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              onPressed: () {
+                _showContactOptions(context);
+              },
+              icon: Icon(Icons.support_agent, size: isSmallScreen ? 18 : 20),
+              label: Text(
+                "Contact Support",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 14 : 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isSmallScreen ? 8 : 12),
           TextButton(
             onPressed: () {
               // Call delivery person
             },
             child: Text(
               "Call Delivery Agent",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.deepPurple,
-                fontSize: 14,
+                fontSize: isSmallScreen ? 12 : 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -427,52 +644,120 @@ class _ContactButton extends StatelessWidget {
   }
 
   void _showContactOptions(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Contact Options",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      builder: (context) => SafeArea(
+        child: Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Contact Options",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 16 : 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: isSmallScreen ? 16 : 20),
+                ..._buildContactListTiles(isSmallScreen, context),
+                SizedBox(height: isSmallScreen ? 8 : 12),
+              ],
             ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: const Icon(Icons.phone, color: Colors.green),
-              title: const Text("Call Support"),
-              subtitle: const Text("+20 100 123 4567"),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement call functionality
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.chat, color: Colors.blue),
-              title: const Text("Live Chat"),
-              subtitle: const Text("Chat with our support team"),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement chat functionality
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.email, color: Colors.orange),
-              title: const Text("Send Email"),
-              subtitle: const Text("support@biskyShop.com"),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement email functionality
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildContactListTiles(
+    bool isSmallScreen,
+    BuildContext context,
+  ) {
+    return [
+      ListTile(
+        leading: Icon(
+          Icons.phone,
+          color: Colors.green,
+          size: isSmallScreen ? 20 : 24,
+        ),
+        title: Text(
+          "Call Support",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+        ),
+        subtitle: Text(
+          "+20 100 123 4567",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          // Implement call functionality
+        },
+      ),
+      ListTile(
+        leading: Icon(
+          Icons.chat,
+          color: Colors.blue,
+          size: isSmallScreen ? 20 : 24,
+        ),
+        title: Text(
+          "Live Chat",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+        ),
+        subtitle: Text(
+          "Chat with our support team",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          // Implement chat functionality
+        },
+      ),
+      ListTile(
+        leading: Icon(
+          Icons.email,
+          color: Colors.orange,
+          size: isSmallScreen ? 20 : 24,
+        ),
+        title: Text(
+          "Send Email",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+        ),
+        subtitle: Text(
+          "support@biskyShop.com",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          // Implement email functionality
+        },
+      ),
+    ];
   }
 }
 

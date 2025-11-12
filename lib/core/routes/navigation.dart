@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 pushTo(BuildContext context, String path, {Object? extra,}) {
-  context.push(path, extra: extra);
+  var result = context.push(path, extra: extra);
+  return result;
 }
 
 pushReplacementTo(BuildContext context, String path, {Object? extra}) {

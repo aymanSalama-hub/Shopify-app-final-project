@@ -4,6 +4,8 @@ import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/favorite/favorite_screen.dart';
 import 'package:bisky_shop/features/home/presentation/pages/home_screen.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
+import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -28,7 +30,11 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
       HomeScreen(name: widget.name),
       FavoriteScreen(),
       CartScreen(),
-      PersonScreen(),
+      // Provide ProfileCubit for the PersonScreen when used inside the main tabs
+      BlocProvider(
+        create: (_) => ProfileCubit()..loadUserData(),
+        child: const PersonScreen(),
+      ),
     ];
   }
 

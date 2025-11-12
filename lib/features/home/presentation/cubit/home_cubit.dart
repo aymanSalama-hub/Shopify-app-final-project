@@ -1,6 +1,7 @@
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:bisky_shop/features/home/data/repo/home_repo.dart';
 import 'package:bisky_shop/features/home/presentation/cubit/home_state.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,11 +46,16 @@ class HomeCubit extends Cubit<HomeState> {
     ProductResponse3(),
     ProductResponse3(),
   ];
-  getNameUser() {
+  getNameUser() async {
     emit(LoadingHomeSTate());
     try {
-      final _auth = FirebaseAuth.instance;
-      name = _auth.currentUser!.displayName!;
+      final auth = await FirebaseAuth.instance.currentUser!.uid;
+      final firestore = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(auth)
+          .get();
+      name = firestore['name'];
+
       emit(SuccessHomeState());
     } catch (e) {
       emit(ErrorHomeState(message: e.toString()));
