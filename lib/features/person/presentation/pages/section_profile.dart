@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 // Profile Image Section
-                _buildProfileImageSection(theme, isDarkMode, cubit),
+                _buildProfileImageSection(theme, isDarkMode, cubit, state),
 
                 const SizedBox(height: 32),
 
@@ -87,69 +87,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ThemeData theme,
     bool isDarkMode,
     ProfileCubit cubit,
+    ProfileState state,
   ) {
     return Column(
       children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.secondary,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: CircleAvatar(
-                  radius: 56,
-                  backgroundColor: theme.cardColor,
-                  child: CircleAvatar(
-                    radius: 52,
-                    backgroundImage: cubit.profileImageUrl.startsWith('http')
-                        ? NetworkImage(cubit.profileImageUrl)
-                        : FileImage(File(cubit.profileImageUrl)),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 4,
-              right: 4,
-              child: GestureDetector(
-                onTap: cubit.pickImage,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: theme.cardColor, width: 3),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
+        if (state is! ProfileLoadingState)
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.secondary,
                     ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  child: Icon(
-                    Icons.camera_alt_rounded,
-                    color: theme.colorScheme.onPrimary,
-                    size: 20,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: CircleAvatar(
+                    radius: 56,
+                    backgroundColor: theme.cardColor,
+                    child: CircleAvatar(
+                      radius: 52,
+                      backgroundImage: cubit.profileImageUrl.startsWith('http')
+                          ? NetworkImage(cubit.profileImageUrl)
+                          : FileImage(File(cubit.profileImageUrl)),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+              cubit.isEditing
+                  ? Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: cubit.pickImage,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: theme.cardColor,
+                              width: 3,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.camera_alt_rounded,
+                            color: theme.colorScheme.onPrimary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
+            ],
+          ),
         const SizedBox(height: 16),
         Text(
           'Tap camera icon to update photo',
@@ -402,6 +409,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ? theme.colorScheme.onSurface.withOpacity(0.4)
                           : theme.colorScheme.onBackground,
                     ),
+                    maxLength: label == 'Phone Number' ? 11 : null,
+                    
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: label,

@@ -68,6 +68,7 @@ class PersonScreen extends StatelessWidget {
     ProfileState state,
   ) {
     return Container(
+      width: 250,
       margin: EdgeInsets.all(isSmallScreen ? 20 : 24),
       padding: EdgeInsets.all(isSmallScreen ? 24 : 32),
       decoration: BoxDecoration(
