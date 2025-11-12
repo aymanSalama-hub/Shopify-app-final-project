@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bisky_shop/core/constants/app_images.dart';
 import 'package:bisky_shop/core/constants/app_strings.dart';
 import 'package:bisky_shop/core/constants/size_responsive.dart';
@@ -41,9 +43,18 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: ds * 2.2,
-                    backgroundImage: const NetworkImage(
-                      'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=80&q=80',
-                    ),
+                    backgroundImage: (() {
+                      final String url = cubit.photoUrl;
+                      if (url.isEmpty) {
+                        return const NetworkImage(
+                          'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
+                        );
+                      }
+                      if (url.startsWith('http')) {
+                        return NetworkImage(url) as ImageProvider<Object>;
+                      }
+                      return FileImage(File(url)) as ImageProvider<Object>;
+                    })(),
                   ),
                   Gap(ds * 1.1),
                   Column(
