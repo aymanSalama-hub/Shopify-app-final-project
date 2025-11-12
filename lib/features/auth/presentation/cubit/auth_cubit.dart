@@ -1,5 +1,6 @@
 import 'package:bisky_shop/core/constants/user_type.dart';
 import 'package:bisky_shop/features/auth/presentation/cubit/auths_states.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -93,6 +94,7 @@ class AuthCubit extends Cubit<AuthStates> {
   }
 
   signUp() async {
+    final firestore = FirebaseFirestore.instance;
     emit(AuthsLoadingState());
     try {
       final credential = await FirebaseAuth.instance
@@ -106,6 +108,13 @@ class AuthCubit extends Cubit<AuthStates> {
       } else {
         credential.user?.updatePhotoURL('Customer');
       }
+      await firestore.collection('users').doc(credential.user?.uid).set({
+        'photoURL': '',
+        'name': name.text,
+        'email': email.text,
+        'phone number': '',
+        'address': '',
+      });
       emit(AuthsSuccessState());
     } on FirebaseAuthException catch (e) {
       emit(AuthsErrorState());

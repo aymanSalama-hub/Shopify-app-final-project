@@ -13,7 +13,9 @@ import 'package:bisky_shop/features/details/presentation/cubit/addCart_cubit.dar
 import 'package:bisky_shop/features/details/presentation/pages/product_details.dart';
 import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
 import 'package:bisky_shop/features/main/main_app_navigation.dart';
+import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
 import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
+import 'package:bisky_shop/features/person/presentation/pages/section_profile.dart';
 import 'package:bisky_shop/features/person/presentation/pages/settings_screen.dart';
 import 'package:bisky_shop/features/products/presentation/pages/product_gride_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,6 +41,7 @@ class Routs {
   static const String checkout = '/checkout';
   static const String orderSuccess = '/orderSuccess';
   static const String adminTrack = '/adminTrack';
+  static const String profile = '/profile';
 
   static final routes = GoRouter(
     initialLocation: Routs.splash,
@@ -126,8 +129,21 @@ class Routs {
         path: settings,
         builder: (context, state) => const SettingsScreen(),
       ),
+      GoRoute(
+        path: profile,
+        builder: (context, state) => BlocProvider(
+          create: (context) => ProfileCubit()..loadUserData(),
+          child: const ProfileScreen(),
+        ),
+      ),
 
-      GoRoute(path: person, builder: (context, state) => const PersonScreen()),
+      GoRoute(
+        path: person,
+        builder: (context, state) => BlocProvider(
+          create: (context) => ProfileCubit()..loadUserData(),
+          child: const PersonScreen(),
+        ),
+      ),
 
       GoRoute(path: onboarding, builder: (context, state) => OnBoarding_body()),
     ],

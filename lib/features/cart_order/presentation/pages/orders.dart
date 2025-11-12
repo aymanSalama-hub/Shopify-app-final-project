@@ -5,6 +5,7 @@ import 'package:bisky_shop/core/routes/routs.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
 import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
 import 'package:bisky_shop/features/cart_order/presentation/widgets/order_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -84,6 +85,19 @@ class _OrdersScreenState extends State<OrdersScreen>
           'Orders',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
+        actions: cubit.user1 == 'Admin'
+            ? [
+                // Sign Out Button in AppBar
+                IconButton(
+                  icon: Icon(Icons.logout, color: Colors.deepPurple),
+                  onPressed: () {
+                    FirebaseAuth.instance.signOut();
+                    pushAndRemoveUntil(context, Routs.login);
+                  },
+                  tooltip: 'Sign Out',
+                ),
+              ]
+            : null,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.deepPurple,
