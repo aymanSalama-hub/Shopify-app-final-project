@@ -63,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                       Text("Hello!", style: TextStyles.styleSize12),
                       Gap(ds * 0.5),
                       Text(
-                        name == '' ? cubit.name : name,
+                        cubit.name == '' ? name : cubit.name,
                         style: TextStyles.styleSize14,
                       ),
                     ],

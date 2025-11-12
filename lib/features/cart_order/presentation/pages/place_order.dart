@@ -16,9 +16,7 @@ class CheckoutScreen extends StatelessWidget {
     double subtotal = (orderData['subtotal'] as num?)?.toDouble() ?? 0.0;
     double discount = (orderData['discount'] as num?)?.toDouble() ?? 0.0;
     double delivery = (orderData['delivery'] as num?)?.toDouble() ?? 0.0;
-    double total =
-        (orderData['total'] as num?)?.toDouble() ??
-        (subtotal - discount + delivery);
+    double total = (subtotal - discount + delivery);
 
     var cubit = context.read<CardOrderCubit>();
 

@@ -19,12 +19,14 @@ class ProfileCubit extends Cubit<ProfileState> {
       'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png';
   bool isEditing = false;
   Future<void> pickImage() async {
+    emit(ProfileLoadingState());
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       profileImageUrl = image.path;
     }
+    emit(ProfileSuccessState());
   }
 
   void loadUserData() async {
@@ -38,6 +40,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(ProfileErrorState());
         return;
       }
+      print(userId);
 
       final doc = await firebase.collection('users').doc(userId).get();
       final data = doc.data();

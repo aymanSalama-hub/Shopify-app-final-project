@@ -67,8 +67,8 @@ class _CartScreenState extends State<CartScreen> {
               Routs.checkout,
               extra: {
                 'orderId': cubit.orderId1,
-                'totalItems': cubit.cartItems.length,
-                'subtotal': cubit.subtotal,
+                'totalItems': cubit.lengthitem,
+                'subtotal': cubit.subtotaltrans,
                 'discount': cubit.discount,
                 'delivery': cubit.delivery,
                 'total': cubit.total,

@@ -46,6 +46,7 @@ class AuthCubit extends Cubit<AuthStates> {
       scopes: ['email', 'profile'],
       signInOption: SignInOption.standard, // Force account picker
     );
+    final firestore = FirebaseFirestore.instance;
 
     emit(AuthsLoadingState());
 
@@ -84,6 +85,21 @@ class AuthCubit extends Cubit<AuthStates> {
       UserCredential userCredential = await _auth.signInWithCredential(
         credential,
       );
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (await firestore
+              .collection('users')
+              .doc(googleUser.id)
+              .get()
+              .then((value) => value.exists) ==
+          false) {
+        await firestore.collection('users').doc(userId).set({
+          'photoURL': '',
+          'name': googleUser.displayName ?? '',
+          'email': googleUser.email,
+          'phone number': '',
+          'address': '',
+        });
+      }
 
       emit(AuthsSuccessState());
       print('Successfully signed in with: ${googleUser.email}');

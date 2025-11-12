@@ -12,6 +12,8 @@ class CardOrderCubit extends Cubit<CardOrderState> {
   CardOrderCubit() : super(CardOrderInitial());
 
   List<CartItemModel> cartItems = [];
+  var lengthitem = 0;
+  double subtotaltrans = 0.0;
   StreamSubscription? _cartSubscription;
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
@@ -113,6 +115,12 @@ class CardOrderCubit extends Cubit<CardOrderState> {
           .collection('Userorders')
           .doc(orderId)
           .set(order.toMap());
+      lengthitem = cartItems.length;
+      subtotaltrans = cartItems.fold(
+        0,
+        (sumitems, item) => sumitems + (item.price * item.quantity!),
+      );
+      ;
       emit(CardOrderLoaded());
     } catch (e) {
       print('Error creating order: $e');
