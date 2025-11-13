@@ -105,16 +105,13 @@ class _CartScreenState extends State<CartScreen> {
           return Scaffold(
             backgroundColor: AppColors.backgroundColorCart,
             appBar: AppBar(
-              elevation: 0,
-              backgroundColor: AppColors.whiteColor,
-              title: const Text(
-                'Cart',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              backgroundColor: Colors.white,
+              title: Text('Cart',
+                  style: TextStyle(
+                      color:  Color(0xFF6C63FF), fontSize: 30, fontWeight: FontWeight.bold)),
+              centerTitle: true,
             ),
+
             body: cubit.cartItems.isEmpty
                 ? _buildEmptyCartState()
                 : Column(
@@ -254,7 +251,6 @@ Widget _buildEmptyCartState() {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Empty cart illustration
           Icon(
             Icons.shopping_cart_outlined,
             size: 100,
