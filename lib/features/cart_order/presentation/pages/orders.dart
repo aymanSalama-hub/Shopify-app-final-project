@@ -46,14 +46,23 @@ class _OrdersScreenState extends State<OrdersScreen>
     super.dispose();
   }
 
-  Widget _emptyState() {
-    return const Center(
+  Widget _emptyState(ThemeData theme) {
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey),
-          SizedBox(height: 16),
-          Text('No orders found', style: TextStyle(color: Colors.grey)),
+          Icon(
+            Icons.shopping_bag_outlined,
+            size: 80,
+            color: theme.colorScheme.onSurface.withOpacity(0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No orders found',
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
         ],
       ),
     );
@@ -61,35 +70,43 @@ class _OrdersScreenState extends State<OrdersScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final tabs = const ['Active', 'Completed', 'Cancelled'];
     final cubit = context.read<CardOrderCubit>();
 
+    // Dynamic colors based on theme
+    final backgroundColor = theme.colorScheme.background;
+    final appBarColor = theme.colorScheme.surface;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final primaryColor = theme.colorScheme.primary;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarColor,
         elevation: 0,
         leading: cubit.user1 == 'Admin'
             ? null
             : Padding(
                 padding: const EdgeInsets.only(left: 12),
                 child: CircleAvatar(
-                  backgroundColor: const Color(0xfff2f2f2),
+                  backgroundColor: theme.colorScheme.surfaceVariant,
                   child: IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon: Icon(Icons.arrow_back, color: textColor),
                   ),
                 ),
               ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Orders',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
         actions: cubit.user1 == 'Admin'
             ? [
                 // Sign Out Button in AppBar
                 IconButton(
-                  icon: Icon(Icons.logout, color: Colors.deepPurple),
+                  icon: Icon(Icons.logout, color: theme.colorScheme.error),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
                     pushAndRemoveUntil(context, Routs.login);
@@ -100,17 +117,20 @@ class _OrdersScreenState extends State<OrdersScreen>
             : null,
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.deepPurple,
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey.shade500,
+          indicatorColor: primaryColor,
+          labelColor: textColor,
+          unselectedLabelColor: subtitleColor,
+          indicatorSize: TabBarIndicatorSize.tab,
           tabs: tabs.map((t) => Tab(text: t)).toList(),
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: BlocBuilder<CardOrderCubit, CardOrderState>(
         builder: (context, state) {
           if (state is CardOrderLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: primaryColor),
+            );
           }
 
           if (state is CardOrderError) {
@@ -121,12 +141,21 @@ class _OrdersScreenState extends State<OrdersScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: theme.colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       msg,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16, color: Colors.red),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: theme.colorScheme.error,
+                      ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         if (msg.toLowerCase().contains('logged in')) {
@@ -135,6 +164,10 @@ class _OrdersScreenState extends State<OrdersScreen>
                           context.read<CardOrderCubit>().getAllUserOrders();
                         }
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                      ),
                       child: Text(
                         msg.toLowerCase().contains('logged in')
                             ? 'Login'
@@ -155,7 +188,7 @@ class _OrdersScreenState extends State<OrdersScreen>
               Builder(
                 builder: (context) {
                   final list = cubit.activeOrders;
-                  if (list.isEmpty) return _emptyState();
+                  if (list.isEmpty) return _emptyState(theme);
                   return ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: list.length,
@@ -168,7 +201,7 @@ class _OrdersScreenState extends State<OrdersScreen>
               Builder(
                 builder: (context) {
                   final list = cubit.completedOrders;
-                  if (list.isEmpty) return _emptyState();
+                  if (list.isEmpty) return _emptyState(theme);
                   return ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: list.length,
@@ -181,12 +214,12 @@ class _OrdersScreenState extends State<OrdersScreen>
               Builder(
                 builder: (context) {
                   final list = cubit.canceledOrders;
-                  if (list.isEmpty) return _emptyState();
+                  if (list.isEmpty) return _emptyState(theme);
                   return ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: list.length,
                     itemBuilder: (context, index) =>
-                        OrderCard(order: list[index]),
+                        OrderCard(order: list[index], role: cubit.user1),
                   );
                 },
               ),

@@ -25,22 +25,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isDarkMode = theme.brightness == Brightness.dark;
     var cubit = context.read<ProfileCubit>();
 
+    // Dynamic colors based on theme
+    final cardColor = theme.colorScheme.surface;
+    final backgroundColor = theme.colorScheme.background;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: theme.colorScheme.background,
+          backgroundColor: backgroundColor,
           appBar: AppBar(
             title: Text(
               'Profile',
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700,
+                color: textColor,
               ),
             ),
             centerTitle: true,
-            backgroundColor: theme.colorScheme.background,
+            backgroundColor: backgroundColor,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: textColor),
               onPressed: () {
                 Navigator.of(context).pop('back');
               },
@@ -50,6 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 IconButton(
                   icon: Icon(
                     cubit.isEditing ? Icons.close : Icons.edit_rounded,
+                    color: textColor,
                   ),
                   onPressed: cubit.toggleEditing,
                 ),
@@ -61,22 +69,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 // Profile Image Section
-                _buildProfileImageSection(theme, isDarkMode, cubit, state),
+                _buildProfileImageSection(
+                  theme,
+                  isDarkMode,
+                  cubit,
+                  state,
+                  cardColor,
+                  textColor,
+                  subtitleColor,
+                ),
 
                 const SizedBox(height: 32),
 
                 // Personal Information Section
-                _buildPersonalInfoSection(theme, cubit, state),
+                _buildPersonalInfoSection(
+                  theme,
+                  cubit,
+                  state,
+                  cardColor,
+                  textColor,
+                  subtitleColor,
+                ),
 
                 const SizedBox(height: 24),
 
-                // Account Settings Section
-                //_buildAccountSettingsSection(theme),
+                // Account Settings Section (commented out but theme-ready)
+                //_buildAccountSettingsSection(theme, cardColor, textColor, subtitleColor),
               ],
             ),
           ),
           bottomNavigationBar: cubit.isEditing
-              ? _buildSaveButton(theme, cubit)
+              ? _buildSaveButton(theme, cubit, backgroundColor)
               : null,
         );
       },
@@ -88,6 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool isDarkMode,
     ProfileCubit cubit,
     ProfileState state,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
   ) {
     return Column(
       children: [
@@ -113,12 +139,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.all(4),
                   child: CircleAvatar(
                     radius: 56,
-                    backgroundColor: theme.cardColor,
+                    backgroundColor: cardColor,
                     child: CircleAvatar(
                       radius: 52,
                       backgroundImage: cubit.profileImageUrl.startsWith('http')
                           ? NetworkImage(cubit.profileImageUrl)
+                                as ImageProvider<Object>
                           : FileImage(File(cubit.profileImageUrl)),
+                      onBackgroundImageError: (exception, stackTrace) {
+                        // Handle image loading error
+                      },
                     ),
                   ),
                 ),
@@ -134,10 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           decoration: BoxDecoration(
                             color: theme.colorScheme.primary,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: theme.cardColor,
-                              width: 3,
-                            ),
+                            border: Border.all(color: cardColor, width: 3),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
@@ -160,9 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 16),
         Text(
           'Tap camera icon to update photo',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
-          ),
+          style: theme.textTheme.bodySmall?.copyWith(color: subtitleColor),
         ),
       ],
     );
@@ -172,12 +197,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ThemeData theme,
     ProfileCubit cubit,
     ProfileState state,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
   ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -205,7 +233,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   'Personal Information',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onBackground,
+                    color: textColor,
                   ),
                 ),
               ],
@@ -220,6 +248,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.person_rounded,
               isEditing: cubit.isEditing,
               state: state,
+              cardColor: cardColor,
+              textColor: textColor,
+              subtitleColor: subtitleColor,
             ),
             const SizedBox(height: 16),
 
@@ -231,6 +262,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.email_rounded,
               isEditing: cubit.isEditing,
               state: state,
+              cardColor: cardColor,
+              textColor: textColor,
+              subtitleColor: subtitleColor,
               readOnly: true, // Email usually can't be changed
             ),
             const SizedBox(height: 16),
@@ -243,6 +277,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.phone_rounded,
               isEditing: cubit.isEditing,
               state: state,
+              cardColor: cardColor,
+              textColor: textColor,
+              subtitleColor: subtitleColor,
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 16),
@@ -255,6 +292,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.location_on_rounded,
               isEditing: cubit.isEditing,
               state: state,
+              cardColor: cardColor,
+              textColor: textColor,
+              subtitleColor: subtitleColor,
               maxLines: 2,
             ),
           ],
@@ -263,12 +303,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Widget _buildAccountSettingsSection(ThemeData theme) {
+  // Widget _buildAccountSettingsSection(
+  //   ThemeData theme,
+  //   Color cardColor,
+  //   Color textColor,
+  //   Color subtitleColor,
+  // ) {
   //   return Container(
   //     width: double.infinity,
   //     padding: const EdgeInsets.all(20),
   //     decoration: BoxDecoration(
-  //       color: theme.cardColor,
+  //       color: cardColor,
   //       borderRadius: BorderRadius.circular(20),
   //       boxShadow: [
   //         BoxShadow(
@@ -293,7 +338,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //               'Account Settings',
   //               style: theme.textTheme.titleMedium?.copyWith(
   //                 fontWeight: FontWeight.w600,
-  //                 color: theme.colorScheme.onBackground,
+  //                 color: textColor,
   //               ),
   //             ),
   //           ],
@@ -309,6 +354,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //           onTap: () {
   //             // Navigate to change password screen
   //           },
+  //           textColor: textColor,
+  //           subtitleColor: subtitleColor,
   //         ),
   //         const SizedBox(height: 16),
 
@@ -321,6 +368,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //           onTap: () {
   //             // Navigate to privacy settings
   //           },
+  //           textColor: textColor,
+  //           subtitleColor: subtitleColor,
   //         ),
   //         const SizedBox(height: 16),
 
@@ -333,6 +382,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //           onTap: () {
   //             // Navigate to notification settings
   //           },
+  //           textColor: textColor,
+  //           subtitleColor: subtitleColor,
   //         ),
   //         const SizedBox(height: 16),
 
@@ -345,6 +396,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //           onTap: () {
   //             // Navigate to language settings
   //           },
+  //           textColor: textColor,
+  //           subtitleColor: subtitleColor,
   //         ),
   //       ],
   //     ),
@@ -358,6 +411,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required IconData icon,
     required bool isEditing,
     required ProfileState state,
+    required Color cardColor,
+    required Color textColor,
+    required Color subtitleColor,
     bool readOnly = false,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
@@ -369,7 +425,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             label,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: subtitleColor,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -406,17 +462,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     maxLines: maxLines,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: readOnly
-                          ? theme.colorScheme.onSurface.withOpacity(0.4)
-                          : theme.colorScheme.onBackground,
+                          ? subtitleColor.withOpacity(0.6)
+                          : textColor,
                     ),
                     maxLength: label == 'Phone Number' ? 11 : null,
-                    
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: label,
                       hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.3),
+                        color: subtitleColor.withOpacity(0.4),
                       ),
+                      counterText: '',
                     ),
                   ),
                 ),
@@ -434,6 +490,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //   required String title,
   //   required String subtitle,
   //   required VoidCallback onTap,
+  //   required Color textColor,
+  //   required Color subtitleColor,
   // }) {
   //   return Material(
   //     color: Colors.transparent,
@@ -461,14 +519,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //                     title,
   //                     style: theme.textTheme.bodyLarge?.copyWith(
   //                       fontWeight: FontWeight.w500,
-  //                       color: theme.colorScheme.onBackground,
+  //                       color: textColor,
   //                     ),
   //                   ),
   //                   const SizedBox(height: 2),
   //                   Text(
   //                     subtitle,
   //                     style: theme.textTheme.bodySmall?.copyWith(
-  //                       color: theme.colorScheme.onSurface.withOpacity(0.6),
+  //                       color: subtitleColor,
   //                     ),
   //                   ),
   //                 ],
@@ -476,7 +534,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //             ),
   //             Icon(
   //               Icons.chevron_right_rounded,
-  //               color: theme.colorScheme.onSurface.withOpacity(0.4),
+  //               color: subtitleColor.withOpacity(0.6),
   //               size: 20,
   //             ),
   //           ],
@@ -486,37 +544,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //   );
   // }
 
-  Widget _buildSaveButton(ThemeData theme, ProfileCubit cubit) {
+  Widget _buildSaveButton(
+    ThemeData theme,
+    ProfileCubit cubit,
+    Color backgroundColor,
+  ) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: cubit.saveProfile,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 0,
-              shadowColor: Colors.transparent,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_rounded, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Save Changes',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onPrimary,
-                  ),
+      child: Container(
+        color: backgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: cubit.saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              ],
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Save Changes',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

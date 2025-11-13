@@ -9,11 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PersonScreen extends StatelessWidget {
-  const PersonScreen({
-    super.key,
-    //this.imageUrl =
-    //  'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png',
-  });
+  const PersonScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +17,18 @@ class PersonScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
 
+    // Dynamic colors based on theme
+    final backgroundColor = theme.brightness == Brightness.dark
+        ? Colors.grey[900]
+        : const Color.fromARGB(255, 223, 219, 219);
+    final cardColor = theme.colorScheme.surface;
+    final signOutButtonColor = theme.colorScheme.surface;
+
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         final cubit = context.read<ProfileCubit>();
         return Scaffold(
-          backgroundColor: Color.fromARGB(255, 223, 219, 219),
+          backgroundColor: backgroundColor,
           body: SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -43,13 +46,19 @@ class PersonScreen extends StatelessWidget {
                       isSmallScreen,
                       cubit,
                       state,
+                      cardColor,
                     ),
 
                     // Menu Buttons Section
-                    _buildMenuSection(context, theme, isSmallScreen),
+                    _buildMenuSection(context, theme, isSmallScreen, cardColor),
 
                     // Sign Out Section
-                    _buildSignOutSection(context, theme, isSmallScreen),
+                    _buildSignOutSection(
+                      context,
+                      theme,
+                      isSmallScreen,
+                      signOutButtonColor,
+                    ),
                   ],
                 ),
               ),
@@ -66,13 +75,14 @@ class PersonScreen extends StatelessWidget {
     bool isSmallScreen,
     ProfileCubit cubit,
     ProfileState state,
+    Color cardColor,
   ) {
     return Container(
-      width: 250,
+      width: isSmallScreen ? 220 : 250,
       margin: EdgeInsets.all(isSmallScreen ? 20 : 24),
-      padding: EdgeInsets.all(isSmallScreen ? 24 : 32),
+      padding: EdgeInsets.all(isSmallScreen ? 20 : 32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -171,12 +181,13 @@ class PersonScreen extends StatelessWidget {
     BuildContext context,
     ThemeData theme,
     bool isSmallScreen,
+    Color cardColor,
   ) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: isSmallScreen ? 20 : 24),
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -311,6 +322,7 @@ class PersonScreen extends StatelessWidget {
     BuildContext context,
     ThemeData theme,
     bool isSmallScreen,
+    Color signOutButtonColor,
   ) {
     return Padding(
       padding: EdgeInsets.all(isSmallScreen ? 20 : 24),
@@ -320,7 +332,7 @@ class PersonScreen extends StatelessWidget {
           Text(
             'App Version 1.0.0',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.9),
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
           SizedBox(height: isSmallScreen ? 16 : 20),
@@ -348,7 +360,7 @@ class PersonScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: Colors.white,
+                    color: signOutButtonColor,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

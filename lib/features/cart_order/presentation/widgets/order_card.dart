@@ -49,15 +49,24 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final firstItem = order.items[0];
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
     final isMediumScreen = screenWidth < 600;
 
+    // Dynamic colors based on theme
+    final cardColor = theme.colorScheme.surface;
+    final headerColor = theme.colorScheme.surfaceVariant;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final primaryColor = theme.colorScheme.primary;
+    final borderColor = theme.colorScheme.outline.withOpacity(0.2);
+
     return Container(
       margin: EdgeInsets.only(bottom: isSmallScreen ? 12 : 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
         boxShadow: [
           BoxShadow(
@@ -66,7 +75,7 @@ class OrderCard extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade200, width: 1),
+        border: Border.all(color: borderColor, width: 1),
       ),
       child: Column(
         children: [
@@ -74,7 +83,7 @@ class OrderCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: headerColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(isSmallScreen ? 12 : 16),
                 topRight: Radius.circular(isSmallScreen ? 12 : 16),
@@ -93,14 +102,14 @@ class OrderCard extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: isSmallScreen ? 14 : 16,
-                          color: Colors.deepPurple,
+                          color: primaryColor,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _getDeliveryDate(),
                         style: TextStyle(
-                          color: Colors.grey.shade600,
+                          color: subtitleColor,
                           fontSize: isSmallScreen ? 10 : 12,
                         ),
                       ),
@@ -138,8 +147,23 @@ class OrderCard extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
             child: isMediumScreen
-                ? _buildMobileLayout(context, firstItem, isSmallScreen)
-                : _buildDesktopLayout(context, firstItem),
+                ? _buildMobileLayout(
+                    context,
+                    firstItem,
+                    isSmallScreen,
+                    theme,
+                    textColor,
+                    subtitleColor,
+                    primaryColor,
+                  )
+                : _buildDesktopLayout(
+                    context,
+                    firstItem,
+                    theme,
+                    textColor,
+                    subtitleColor,
+                    primaryColor,
+                  ),
           ),
         ],
       ),
@@ -150,6 +174,10 @@ class OrderCard extends StatelessWidget {
     BuildContext context,
     dynamic firstItem,
     bool isSmallScreen,
+    ThemeData theme,
+    Color textColor,
+    Color subtitleColor,
+    Color primaryColor,
   ) {
     return Column(
       children: [
@@ -171,10 +199,10 @@ class OrderCard extends StatelessWidget {
                   return Container(
                     height: isSmallScreen ? 70 : 80,
                     width: isSmallScreen ? 70 : 80,
-                    color: Colors.grey.shade200,
+                    color: theme.colorScheme.surfaceVariant,
                     child: Icon(
                       Icons.shopping_bag_outlined,
-                      color: Colors.grey.shade400,
+                      color: subtitleColor,
                       size: isSmallScreen ? 30 : 35,
                     ),
                   );
@@ -193,6 +221,7 @@ class OrderCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: isSmallScreen ? 14 : 16,
+                      color: textColor,
                     ),
                   ),
                   SizedBox(height: isSmallScreen ? 2 : 4),
@@ -201,7 +230,7 @@ class OrderCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: subtitleColor,
                       fontSize: isSmallScreen ? 12 : 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -210,7 +239,7 @@ class OrderCard extends StatelessWidget {
                   Text(
                     firstItem.brand,
                     style: TextStyle(
-                      color: Colors.grey.shade500,
+                      color: subtitleColor.withOpacity(0.8),
                       fontSize: isSmallScreen ? 10 : 12,
                     ),
                   ),
@@ -219,7 +248,7 @@ class OrderCard extends StatelessWidget {
                     Text(
                       '+ ${order.items.length - 1} more items',
                       style: TextStyle(
-                        color: Colors.grey.shade500,
+                        color: subtitleColor.withOpacity(0.6),
                         fontSize: isSmallScreen ? 9 : 11,
                       ),
                     ),
@@ -243,7 +272,7 @@ class OrderCard extends StatelessWidget {
                   Text(
                     '\$${order.totalPrice.toStringAsFixed(2)}',
                     style: TextStyle(
-                      color: Colors.deepPurple,
+                      color: primaryColor,
                       fontWeight: FontWeight.w600,
                       fontSize: isSmallScreen ? 14 : 16,
                     ),
@@ -278,7 +307,8 @@ class OrderCard extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: primaryColor,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -286,12 +316,13 @@ class OrderCard extends StatelessWidget {
                     horizontal: isSmallScreen ? 12 : 16,
                     vertical: isSmallScreen ? 6 : 8,
                   ),
+                  elevation: 1,
                 ),
                 child: Text(
                   'Track',
                   style: TextStyle(
-                    color: Colors.white,
                     fontSize: isSmallScreen ? 12 : 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -302,7 +333,14 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, dynamic firstItem) {
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    dynamic firstItem,
+    ThemeData theme,
+    Color textColor,
+    Color subtitleColor,
+    Color primaryColor,
+  ) {
     return Row(
       children: [
         // ===== Product Image =====
@@ -322,10 +360,10 @@ class OrderCard extends StatelessWidget {
               return Container(
                 height: 90,
                 width: 100,
-                color: Colors.grey.shade200,
+                color: theme.colorScheme.surfaceVariant,
                 child: Icon(
                   Icons.shopping_bag_outlined,
-                  color: Colors.grey.shade400,
+                  color: subtitleColor,
                   size: 40,
                 ),
               );
@@ -343,36 +381,43 @@ class OrderCard extends StatelessWidget {
               children: [
                 Text(
                   '${order.items.length} ${order.items.length == 1 ? 'item' : 'items'}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   firstItem.title,
                   style: TextStyle(
-                    color: Colors.grey.shade600,
+                    color: subtitleColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 Text(
                   firstItem.brand,
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                  style: TextStyle(
+                    color: subtitleColor.withOpacity(0.8),
+                    fontSize: 12,
+                  ),
                 ),
                 if (order.items.length > 1) ...[
                   const SizedBox(height: 2),
                   Text(
                     '+ ${order.items.length - 1} more items',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+                    style: TextStyle(
+                      color: subtitleColor.withOpacity(0.6),
+                      fontSize: 11,
+                    ),
                   ),
                 ],
                 const SizedBox(height: 6),
                 Text(
                   '\$${order.totalPrice.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    color: Colors.deepPurple,
+                  style: TextStyle(
+                    color: primaryColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
@@ -404,20 +449,21 @@ class OrderCard extends StatelessWidget {
                   'orderId': order.orderId,
                   'userId': order.userId,
                 };
-
                 pushTo(context, Routs.adminTrack, extra: orderData);
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: primaryColor,
+              foregroundColor: theme.colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              elevation: 1,
             ),
-            child: const Text(
+            child: Text(
               'Track',
-              style: TextStyle(color: Colors.white, fontSize: 14),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),
         ),

@@ -2,7 +2,6 @@ import 'package:bisky_shop/core/constants/app_constants.dart';
 import 'package:bisky_shop/core/constants/app_strings.dart';
 import 'package:bisky_shop/core/routes/navigation.dart';
 import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:bisky_shop/features/auth/presentation/cubit/auths_states.dart';
 import 'package:bisky_shop/features/auth/presentation/widget/custom_text_form_field.dart';
@@ -34,7 +33,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     var cubit = context.read<AuthCubit>();
+
+    // Dynamic colors based on theme
+    final backgroundColor = theme.colorScheme.background;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final primaryColor = theme.colorScheme.primary;
+    final errorColor = theme.colorScheme.error;
+    final borderColor = theme.colorScheme.outline.withOpacity(0.2);
+
     return BlocListener<AuthCubit, AuthStates>(
       listener: (context, state) async {
         if (state is AuthsLoadingState) {
@@ -58,8 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
           pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Login Failed'),
-              backgroundColor: Colors.red,
+              content: Text(
+                'Login Failed',
+                style: TextStyle(color: theme.colorScheme.onError),
+              ),
+              backgroundColor: errorColor,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -69,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.backgroundColorCart,
+        backgroundColor: backgroundColor,
         body: SafeArea(
           child: Padding(
             padding: AppConstants.bodyPadding.copyWith(top: 24, bottom: 24),
@@ -82,17 +94,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Gap(50),
                     // Header Section
-                    _buildHeaderSection(),
+                    _buildHeaderSection(textColor, subtitleColor),
 
                     const Gap(40),
 
                     // Form Section
-                    _buildFormSection(cubit),
+                    _buildFormSection(cubit, theme),
 
                     const Gap(24),
 
                     // Login Button
-                    _buildLoginButton(cubit),
+                    _buildLoginButton(cubit, theme, primaryColor),
 
                     const Gap(32),
                     // Social Login
@@ -107,21 +119,26 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
 
         // Bottom Navigation - Register Link
-        bottomNavigationBar: _buildBottomNavigationBar(),
+        bottomNavigationBar: _buildBottomNavigationBar(
+          theme,
+          textColor,
+          subtitleColor,
+          primaryColor,
+        ),
       ),
     );
   }
 
-  Widget _buildHeaderSection() {
+  Widget _buildHeaderSection(Color textColor, Color subtitleColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppStrings.welcomeBack,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: textColor,
             letterSpacing: -0.5,
             height: 1.2,
           ),
@@ -130,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           "Sign in to continue shopping with us",
           style: TextStyle(
-            color: Colors.grey[600],
+            color: subtitleColor,
             fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
@@ -139,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildFormSection(AuthCubit cubit) {
+  Widget _buildFormSection(AuthCubit cubit, ThemeData theme) {
     return Column(
       children: [
         // Email Field
@@ -147,7 +164,10 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: cubit.email,
           focusNode: _emailFocusNode,
           hintText: AppStrings.emailHint,
-          prefixIcon: Icon(Icons.email_rounded),
+          prefixIcon: Icon(
+            Icons.email_rounded,
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+          ),
           textInputAction: TextInputAction.next,
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -187,7 +207,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton(AuthCubit cubit) {
+  Widget _buildLoginButton(
+    AuthCubit cubit,
+    ThemeData theme,
+    Color primaryColor,
+  ) {
     return BlocBuilder<AuthCubit, AuthStates>(
       builder: (context, state) {
         return SizedBox(
@@ -198,53 +222,63 @@ class _LoginScreenState extends State<LoginScreen> {
                 ? null
                 : () => _performLogin(cubit),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6C63FF),
-              foregroundColor: Colors.white,
+              backgroundColor: primaryColor,
+              foregroundColor: theme.colorScheme.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               elevation: 3,
-              shadowColor: const Color(0xFF6C63FF).withOpacity(0.3),
+              shadowColor: primaryColor.withOpacity(0.3),
               padding: const EdgeInsets.symmetric(horizontal: 24),
             ),
             child: state is AuthsLoadingState
                 ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.white.withOpacity(0.8),
-                ),
-              ),
-            )
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.colorScheme.onPrimary.withOpacity(0.8),
+                      ),
+                    ),
+                  )
                 : const Text(
-              AppStrings.login,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
+                    AppStrings.login,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
           ),
         );
       },
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar(
+    ThemeData theme,
+    Color textColor,
+    Color subtitleColor,
+    Color primaryColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.backgroundColorCart,
-        border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1)),
+        color: theme.colorScheme.background,
+        border: Border(
+          top: BorderSide(
+            color: theme.colorScheme.outline.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             "Don't have an account?",
-            style: TextStyle(color: Colors.grey[700], fontSize: 15),
+            style: TextStyle(color: subtitleColor, fontSize: 15),
           ),
           const SizedBox(width: 4),
           TextButton(
@@ -254,10 +288,10 @@ class _LoginScreenState extends State<LoginScreen> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             ),
-            child: const Text(
+            child: Text(
               'Register',
               style: TextStyle(
-                color: Color(0xFF6C63FF),
+                color: primaryColor,
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
               ),
@@ -274,4 +308,37 @@ class _LoginScreenState extends State<LoginScreen> {
       cubit.login();
     }
   }
+}
+
+// Helper function to show loading dialog
+void showdialog(BuildContext context) {
+  final theme = Theme.of(context);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(color: theme.colorScheme.primary),
+              const SizedBox(height: 16),
+              Text(
+                'Signing In...',
+                style: TextStyle(
+                  color: theme.colorScheme.onBackground,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

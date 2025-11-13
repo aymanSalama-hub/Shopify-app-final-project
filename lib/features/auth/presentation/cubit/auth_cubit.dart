@@ -88,7 +88,7 @@ class AuthCubit extends Cubit<AuthStates> {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (await firestore
               .collection('users')
-              .doc(googleUser.id)
+              .doc(userId)
               .get()
               .then((value) => value.exists) ==
           false) {

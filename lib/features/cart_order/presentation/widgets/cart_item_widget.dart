@@ -17,77 +17,163 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
+    // Dynamic colors based on theme
+    final cardColor = theme.colorScheme.surface;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final primaryColor = theme.colorScheme.primary;
+    final errorColor = theme.colorScheme.error;
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      padding: const EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12 : 15,
+        vertical: isSmallScreen ? 4 : 5,
+      ),
+      padding: EdgeInsets.all(isSmallScreen ? 8 : 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
         children: [
+          // Product Image
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
             child: Image.network(
               item.imageUrl,
-              height: 70,
-              width: 70,
+              height: isSmallScreen ? 60 : 70,
+              width: isSmallScreen ? 60 : 70,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: isSmallScreen ? 60 : 70,
+                  width: isSmallScreen ? 60 : 70,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
+                  ),
+                  child: Icon(
+                    Icons.shopping_bag_outlined,
+                    color: subtitleColor,
+                    size: isSmallScreen ? 24 : 28,
+                  ),
+                );
+              },
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: isSmallScreen ? 8 : 10),
+
+          // Product Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   item.title,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: isSmallScreen ? 14 : 16,
+                    color: textColor,
+                    height: 1.2,
                   ),
                 ),
-                Text(item.brand, style: TextStyle(color: Colors.grey[600])),
+                SizedBox(height: isSmallScreen ? 2 : 4),
+                Text(
+                  item.brand,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontSize: isSmallScreen ? 12 : 13,
+                  ),
+                ),
+                SizedBox(height: isSmallScreen ? 2 : 4),
                 Text(
                   '\$${item.price}',
-                  style: const TextStyle(
-                    color: Color(0xFF6C63FF),
+                  style: TextStyle(
+                    color: primaryColor,
                     fontWeight: FontWeight.w600,
+                    fontSize: isSmallScreen ? 14 : 15,
                   ),
                 ),
               ],
             ),
           ),
+
+          // Remove Button
           IconButton(
-            icon: const Icon(Icons.delete, color: Colors.redAccent),
+            icon: Icon(
+              Icons.delete_outline,
+              color: errorColor,
+              size: isSmallScreen ? 20 : 22,
+            ),
             onPressed: onRemove,
+            tooltip: 'Remove item',
           ),
+
+          // Quantity Controls
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF),
-              borderRadius: BorderRadius.circular(25),
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(isSmallScreen ? 20 : 25),
             ),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
+                // Decrease Button
                 IconButton(
-                  icon: const Icon(Icons.remove, color: Colors.white),
+                  icon: Icon(
+                    Icons.remove,
+                    color: theme.colorScheme.onPrimary,
+                    size: isSmallScreen ? 16 : 18,
+                  ),
                   onPressed: onDecrease,
-                ),
-                Text(
-                  item.quantity.toString().padLeft(2, '0'),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(
+                    minWidth: isSmallScreen ? 32 : 36,
+                    minHeight: isSmallScreen ? 32 : 36,
                   ),
                 ),
+
+                // Quantity Display
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    item.quantity.toString().padLeft(2, '0'),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimary,
+                      fontSize: isSmallScreen ? 13 : 14,
+                    ),
+                  ),
+                ),
+
+                // Increase Button
                 IconButton(
-                  icon: const Icon(Icons.add, color: Colors.white),
+                  icon: Icon(
+                    Icons.add,
+                    color: theme.colorScheme.onPrimary,
+                    size: isSmallScreen ? 16 : 18,
+                  ),
                   onPressed: onIncrease,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(
+                    minWidth: isSmallScreen ? 32 : 36,
+                    minHeight: isSmallScreen ? 32 : 36,
+                  ),
                 ),
               ],
             ),
