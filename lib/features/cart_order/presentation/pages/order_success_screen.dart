@@ -7,56 +7,93 @@ class OrderSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
+    // Dynamic colors based on theme
+    final backgroundColor = theme.colorScheme.background;
+    final primaryColor = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final successColor = theme.colorScheme.primary; // Using primary for success
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.check_circle,
-                color: Color(0xFF6C63FF),
-                size: 100,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Order Placed Successfully!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Your order has been confirmed.\nYou can track it from My Orders section.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black54),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () =>
-                    pushAndRemoveUntil(context, Routs.mainAppNavigation),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6C63FF),
-                  minimumSize: const Size(double.infinity, 55),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(isSmallScreen ? 20 : 25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Success Icon
+                Container(
+                  width: isSmallScreen ? 120 : 140,
+                  height: isSmallScreen ? 120 : 140,
+                  decoration: BoxDecoration(
+                    color: successColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle,
+                    color: successColor,
+                    size: isSmallScreen ? 80 : 100,
                   ),
                 ),
-                child: const Text(
-                  'Back to card',
+                SizedBox(height: isSmallScreen ? 24 : 32),
+
+                // Success Title
+                Text(
+                  'Order Placed Successfully!',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: isSmallScreen ? 20 : 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: textColor,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: isSmallScreen ? 12 : 16),
+
+                // Success Message
+                Text(
+                  'Your order has been confirmed.\nYou can track it from My Orders section.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 14 : 16,
+                    color: subtitleColor,
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: isSmallScreen ? 32 : 40),
+
+                // Action Button
+                SizedBox(
+                  width: double.infinity,
+                  height: isSmallScreen ? 50 : 55,
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        pushAndRemoveUntil(context, Routs.mainAppNavigation),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 2,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: Text(
+                      'Back to Home',
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 15 : 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

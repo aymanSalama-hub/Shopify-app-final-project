@@ -8,10 +8,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({super.key, required this.orderData});
   final Map<String, dynamic> orderData;
-  // بيانات مؤقتة
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+
+    // Dynamic colors based on theme
+    final backgroundColor = theme.colorScheme.background;
+    final cardColor = theme.colorScheme.surface;
+    final appBarColor = theme.colorScheme.surface;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+
     // Safely extract numeric values with fallbacks to avoid null arithmetic
     double subtotal = (orderData['subtotal'] as num?)?.toDouble() ?? 0.0;
     double discount = (orderData['discount'] as num?)?.toDouble() ?? 0.0;
@@ -30,42 +40,56 @@ class CheckoutScreen extends StatelessWidget {
         } else if (state is CardOrderError) {
           pop(context);
           final msg = state.message;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(msg)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(msg),
+              backgroundColor: theme.colorScheme.error,
+            ),
+          );
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
+          backgroundColor: appBarColor,
           elevation: 0,
-          title: const Text(
+          title: Text(
             'Checkout',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: isSmallScreen ? 18 : 20,
+            ),
           ),
-
-          // leading: IconButton(
-          //   icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          //   onPressed: () => pop(context),
-          // ),
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmallScreen ? 16 : 20,
+            vertical: isSmallScreen ? 8 : 10,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle('Delivery Address'),
-              const SizedBox(height: 8),
-              _buildAddressField(cubit),
-              const SizedBox(height: 25),
-              _buildSectionTitle('Order Summary'),
-              const SizedBox(height: 10),
-              _buildSummaryBox(subtotal, discount, delivery, total),
-              const SizedBox(height: 30),
-              _buildPlaceOrderButton(cubit),
+              _buildSectionTitle('Delivery Address', textColor),
+              SizedBox(height: isSmallScreen ? 6 : 8),
+              _buildAddressField(cubit, cardColor, textColor, subtitleColor),
+              SizedBox(height: isSmallScreen ? 20 : 25),
+              _buildSectionTitle('Order Summary', textColor),
+              SizedBox(height: isSmallScreen ? 8 : 10),
+              _buildSummaryBox(
+                subtotal,
+                discount,
+                delivery,
+                total,
+                cardColor,
+                textColor,
+                subtitleColor,
+                isSmallScreen,
+              ),
+              SizedBox(height: isSmallScreen ? 25 : 30),
+              _buildPlaceOrderButton(cubit, theme, isSmallScreen, context),
             ],
           ),
         ),
@@ -73,18 +97,27 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, Color textColor) {
     return Text(
       title,
-      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        color: textColor,
+      ),
     );
   }
 
-  Widget _buildAddressField(CardOrderCubit cubit) {
+  Widget _buildAddressField(
+    CardOrderCubit cubit,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -97,8 +130,10 @@ class CheckoutScreen extends StatelessWidget {
       child: TextField(
         controller: cubit.addressController,
         maxLines: 3,
-        decoration: const InputDecoration(
+        style: TextStyle(color: textColor),
+        decoration: InputDecoration(
           hintText: 'Enter your full delivery address...',
+          hintStyle: TextStyle(color: subtitleColor),
           border: InputBorder.none,
         ),
       ),
@@ -110,12 +145,17 @@ class CheckoutScreen extends StatelessWidget {
     double discount,
     double delivery,
     double total,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+    bool isSmallScreen,
   ) {
     final items = (orderData['totalItems'] as int?)?.toString() ?? '0';
+
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(isSmallScreen ? 12 : 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -127,14 +167,31 @@ class CheckoutScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildSummaryRow('Items', items),
-          _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(2)}'),
-          _buildSummaryRow('Discount', '-\$${discount.toStringAsFixed(2)}'),
-          _buildSummaryRow('Delivery', '\$${delivery.toStringAsFixed(2)}'),
-          const Divider(),
+          _buildSummaryRow('Items', items, textColor, subtitleColor),
+          _buildSummaryRow(
+            'Subtotal',
+            '\$${subtotal.toStringAsFixed(2)}',
+            textColor,
+            subtitleColor,
+          ),
+          _buildSummaryRow(
+            'Discount',
+            '-\$${discount.toStringAsFixed(2)}',
+            textColor,
+            subtitleColor,
+          ),
+          _buildSummaryRow(
+            'Delivery',
+            '\$${delivery.toStringAsFixed(2)}',
+            textColor,
+            subtitleColor,
+          ),
+          Divider(color: subtitleColor.withOpacity(0.3)),
           _buildSummaryRow(
             'Total',
             '\$${total.toStringAsFixed(2)}',
+            textColor,
+            subtitleColor,
             bold: true,
           ),
         ],
@@ -142,7 +199,13 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryRow(String title, String value, {bool bold = false}) {
+  Widget _buildSummaryRow(
+    String title,
+    String value,
+    Color textColor,
+    Color subtitleColor, {
+    bool bold = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -152,12 +215,16 @@ class CheckoutScreen extends StatelessWidget {
             title,
             style: TextStyle(
               fontWeight: bold ? FontWeight.bold : FontWeight.w400,
+              color: bold ? textColor : subtitleColor,
+              fontSize: bold ? 15 : 14,
             ),
           ),
           Text(
             value,
             style: TextStyle(
               fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+              color: bold ? textColor : subtitleColor,
+              fontSize: bold ? 16 : 14,
             ),
           ),
         ],
@@ -165,34 +232,63 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceOrderButton(CardOrderCubit cubit) {
+  Widget _buildPlaceOrderButton(
+    CardOrderCubit cubit,
+    ThemeData theme,
+    bool isSmallScreen,
+    BuildContext context,
+  ) {
     return SizedBox(
       width: double.infinity,
-      height: 55,
+      height: isSmallScreen ? 50 : 55,
       child: ElevatedButton(
-        onPressed: cubit.isPlacingOrder ? null : () => _placeOrder(cubit),
+        onPressed: cubit.isPlacingOrder
+            ? null
+            : () => _placeOrder(cubit, theme, context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF6C63FF),
+          backgroundColor: theme.colorScheme.primary,
+          foregroundColor: theme.colorScheme.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
+          elevation: 2,
         ),
         child: cubit.isPlacingOrder
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text(
+            ? SizedBox(
+                width: isSmallScreen ? 20 : 24,
+                height: isSmallScreen ? 20 : 24,
+                child: CircularProgressIndicator(
+                  color: theme.colorScheme.onPrimary,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
                 'Place Order',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: isSmallScreen ? 15 : 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
       ),
     );
   }
 
-  Future<void> _placeOrder(CardOrderCubit cubit) async {
+  Future<void> _placeOrder(
+    CardOrderCubit cubit,
+    ThemeData theme,
+    BuildContext context,
+  ) async {
     if (cubit.addressController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please enter your delivery address',
+            style: TextStyle(color: theme.colorScheme.onError),
+          ),
+          backgroundColor: theme.colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
@@ -204,4 +300,37 @@ class CheckoutScreen extends StatelessWidget {
 
     cubit.isPlacingOrder = false;
   }
+}
+
+// Helper function to show loading dialog
+void showdialog(BuildContext context) {
+  final theme = Theme.of(context);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(color: theme.colorScheme.primary),
+              const SizedBox(height: 16),
+              Text(
+                'Placing Order...',
+                style: TextStyle(
+                  color: theme.colorScheme.onBackground,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

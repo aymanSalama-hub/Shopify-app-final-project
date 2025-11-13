@@ -16,7 +16,16 @@ class SocialLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     var cubit = context.read<AuthCubit>();
+    
+    // Dynamic colors based on theme
+    final backgroundColor = theme.colorScheme.background;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final surfaceColor = theme.colorScheme.surface;
+    final outlineColor = theme.colorScheme.outline;
+
     return BlocProvider(
       create: (context) => AuthCubit(),
       child: BlocListener<AuthCubit, AuthStates>(
@@ -34,8 +43,11 @@ class SocialLogin extends StatelessWidget {
             pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Login Failed'),
-                backgroundColor: Colors.red,
+                content: Text(
+                  'Login Failed',
+                  style: TextStyle(color: theme.colorScheme.onError),
+                ),
+                backgroundColor: theme.colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -49,12 +61,12 @@ class SocialLogin extends StatelessWidget {
             const Gap(20),
 
             // Modern Divider with Text
-            _buildDividerWithText(),
+            _buildDividerWithText(theme),
 
             const Gap(35),
 
             // Social Buttons Grid
-            _buildSocialButtons(cubit),
+            _buildSocialButtons(cubit, theme),
 
             const Gap(10),
           ],
@@ -63,21 +75,28 @@ class SocialLogin extends StatelessWidget {
     );
   }
 
-  Widget _buildDividerWithText() {
+  Widget _buildDividerWithText(ThemeData theme) {
+    final backgroundColor = theme.colorScheme.background;
+    final textColor = theme.colorScheme.onSurface.withOpacity(0.7);
+
     return Stack(
       alignment: Alignment.center,
       children: [
-        const Divider(color: Colors.grey, thickness: 1, height: 1),
+        Divider(
+          color: theme.colorScheme.outline.withOpacity(0.3), 
+          thickness: 1, 
+          height: 1
+        ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: AppColors.backgroundColorCart,
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             AppStrings.or,
             style: TextStyles.styleSize15.copyWith(
-              color: Colors.grey[700],
+              color: textColor,
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -87,13 +106,15 @@ class SocialLogin extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialButtons(AuthCubit cubit) {
+  Widget _buildSocialButtons(AuthCubit cubit, ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
+    
     return SocialButton(
       image: AppImages.googleSvg,
       label: AppStrings.loginWithGoogle,
-      backgroundColor: Colors.white,
-      textColor: Colors.black87,
-      borderColor: Colors.grey,
+      backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
+      textColor: isDark ? theme.colorScheme.onSurface : Colors.black87,
+      borderColor: theme.colorScheme.outline.withOpacity(0.3),
       iconColor: null, // Use original colors
       onPressed: () {
         cubit.loginWithGoogle();
@@ -126,6 +147,9 @@ class SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Material(
       borderRadius: BorderRadius.circular(16),
       color: backgroundColor,
@@ -142,13 +166,17 @@ class SocialButton extends StatelessWidget {
             boxShadow: hasShadow
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: isDark 
+                          ? Colors.black.withOpacity(0.3)
+                          : Colors.black.withOpacity(0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                       spreadRadius: 0,
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: isDark 
+                          ? Colors.black.withOpacity(0.2)
+                          : Colors.black.withOpacity(0.04),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                       spreadRadius: 0,
@@ -165,7 +193,14 @@ class SocialButton extends StatelessWidget {
                 width: 24,
                 height: 24,
                 alignment: Alignment.center,
-                child: SvgPicture.asset(image, height: 22, width: 22),
+                child: SvgPicture.asset(
+                  image, 
+                  height: 22, 
+                  width: 22,
+                  colorFilter: iconColor != null 
+                      ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
+                      : null,
+                ),
               ),
               const Gap(12),
 
@@ -188,4 +223,41 @@ class SocialButton extends StatelessWidget {
       ),
     );
   }
+}
+
+// Helper function to show loading dialog
+void showdialog(BuildContext context) {
+  final theme = Theme.of(context);
+  
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Signing in...',
+                style: TextStyle(
+                  color: theme.colorScheme.onBackground,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

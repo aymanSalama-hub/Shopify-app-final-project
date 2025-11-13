@@ -35,8 +35,16 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
+
+    // Dynamic colors based on theme
+    final backgroundColor = theme.colorScheme.background;
+    final cardColor = theme.colorScheme.surface;
+    final appBarColor = theme.colorScheme.surface;
+    final textColor = theme.colorScheme.onBackground;
+    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.7);
 
     CardOrderCubit cubit = context.read<CardOrderCubit>();
 
@@ -54,26 +62,37 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
       },
       builder: (context, state) {
         if (state is CardOrderLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            backgroundColor: backgroundColor,
+            body: Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            ),
           );
         }
 
         if (cubit.order.orderId.isEmpty) {
-          return const Scaffold(
-            body: Center(child: Text("Loading order details...")),
+          return Scaffold(
+            backgroundColor: backgroundColor,
+            body: Center(
+              child: Text(
+                "Loading order details...",
+                style: TextStyle(color: textColor),
+              ),
+            ),
           );
         }
 
         return Scaffold(
-          backgroundColor: const Color(0xfff7f7f7),
+          backgroundColor: backgroundColor,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: appBarColor,
             elevation: 1,
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back,
-                color: Colors.black,
+                color: textColor,
                 size: isSmallScreen ? 20 : 24,
               ),
               onPressed: () => Navigator.pop(context),
@@ -81,7 +100,7 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
             title: Text(
               'Track Order',
               style: TextStyle(
-                color: Colors.black,
+                color: textColor,
                 fontWeight: FontWeight.bold,
                 fontSize: isSmallScreen ? 16 : 18,
               ),
@@ -97,6 +116,9 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
                 _OrderInfoCard(
                   order: cubit.order,
                   isSmallScreen: isSmallScreen,
+                  cardColor: cardColor,
+                  textColor: textColor,
+                  subtitleColor: subtitleColor,
                 ),
                 SizedBox(height: isSmallScreen ? 12 : 20),
                 _OrderTimeline(
@@ -107,6 +129,9 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
                   userId1: userId1,
                   cubit: cubit,
                   isSmallScreen: isSmallScreen,
+                  cardColor: cardColor,
+                  textColor: textColor,
+                  subtitleColor: subtitleColor,
                 ),
                 SizedBox(height: isSmallScreen ? 12 : 20),
                 _AddressSection(
@@ -114,9 +139,15 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
                   orderId: cubit.order.orderId,
                   userId: cubit.order.userId,
                   isSmallScreen: isSmallScreen,
+                  cardColor: cardColor,
+                  textColor: textColor,
+                  subtitleColor: subtitleColor,
                 ),
                 SizedBox(height: isSmallScreen ? 20 : 30),
-                _ContactButton(isSmallScreen: isSmallScreen),
+                _ContactButton(
+                  isSmallScreen: isSmallScreen,
+                  textColor: textColor,
+                ),
               ],
             ),
           ),
@@ -129,13 +160,25 @@ class _AdminTrackOrderPageState extends State<AdminTrackOrderPage> {
 class _OrderInfoCard extends StatelessWidget {
   final OrderModel order;
   final bool isSmallScreen;
+  final Color cardColor;
+  final Color textColor;
+  final Color subtitleColor;
 
-  const _OrderInfoCard({required this.order, required this.isSmallScreen});
+  const _OrderInfoCard({
+    required this.order,
+    required this.isSmallScreen,
+    required this.cardColor,
+    required this.textColor,
+    required this.subtitleColor,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
     return Card(
-      color: Colors.white,
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
       ),
@@ -157,11 +200,11 @@ class _OrderInfoCard extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: isSmallScreen ? 16 : 18,
-                          color: Colors.deepPurple,
+                          color: primaryColor,
                         ),
                       ),
                       SizedBox(height: 8),
-                      _buildStatusChip(order.status),
+                      _buildStatusChip(order.status, context),
                     ],
                   )
                 : Row(
@@ -175,18 +218,21 @@ class _OrderInfoCard extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: isSmallScreen ? 16 : 18,
-                            color: Colors.deepPurple,
+                            color: primaryColor,
                           ),
                         ),
                       ),
-                      _buildStatusChip(order.status),
+                      _buildStatusChip(order.status, context),
                     ],
                   ),
             SizedBox(height: isSmallScreen ? 12 : 16),
             _buildInfoRow("Order Date:", _formatDate(order.createdAt)),
             _buildInfoRow("Items:", "${order.items.length} items"),
             _buildInfoRow("Delivery Progress:", order.deliveryPrograss),
-            Divider(height: isSmallScreen ? 20 : 24),
+            Divider(
+              height: isSmallScreen ? 20 : 24,
+              color: subtitleColor.withOpacity(0.3),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -195,6 +241,7 @@ class _OrderInfoCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isSmallScreen ? 14 : 16,
                     fontWeight: FontWeight.w600,
+                    color: textColor,
                   ),
                 ),
                 Text(
@@ -202,7 +249,7 @@ class _OrderInfoCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isSmallScreen ? 16 : 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: primaryColor,
                   ),
                 ),
               ],
@@ -213,21 +260,24 @@ class _OrderInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(String status) {
+  Widget _buildStatusChip(String status, BuildContext context) {
+    final theme = Theme.of(context);
+    final statusColor = _getStatusColor(status);
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isSmallScreen ? 8 : 12,
         vertical: isSmallScreen ? 4 : 6,
       ),
       decoration: BoxDecoration(
-        color: _getStatusColor(status).withOpacity(0.1),
+        color: statusColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _getStatusColor(status), width: 1),
+        border: Border.all(color: statusColor, width: 1),
       ),
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-          color: _getStatusColor(status),
+          color: statusColor,
           fontSize: isSmallScreen ? 10 : 12,
           fontWeight: FontWeight.w600,
         ),
@@ -248,7 +298,7 @@ class _OrderInfoCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: subtitleColor,
                 fontSize: isSmallScreen ? 12 : 14,
               ),
             ),
@@ -263,6 +313,7 @@ class _OrderInfoCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: isSmallScreen ? 12 : 14,
                 fontWeight: FontWeight.w500,
+                color: textColor,
               ),
             ),
           ),
@@ -280,6 +331,9 @@ class _OrderTimeline extends StatelessWidget {
   final String userId1;
   final CardOrderCubit cubit;
   final bool isSmallScreen;
+  final Color cardColor;
+  final Color textColor;
+  final Color subtitleColor;
 
   _OrderTimeline({
     required this.order,
@@ -289,6 +343,9 @@ class _OrderTimeline extends StatelessWidget {
     required this.userId1,
     required this.cubit,
     required this.isSmallScreen,
+    required this.cardColor,
+    required this.textColor,
+    required this.subtitleColor,
   });
 
   List<Map<String, dynamic>> get _steps {
@@ -325,8 +382,11 @@ class _OrderTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
     return Card(
-      color: Colors.white,
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
       ),
@@ -341,6 +401,7 @@ class _OrderTimeline extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: isSmallScreen ? 16 : 18,
+                color: textColor,
               ),
             ),
             SizedBox(height: isSmallScreen ? 12 : 16),
@@ -354,7 +415,7 @@ class _OrderTimeline extends StatelessWidget {
                   step['title'] != order.deliveryPrograss;
 
               return Container(
-                margin: EdgeInsets.only(bottom: isSmallScreen ? 16 : 1),
+                margin: EdgeInsets.only(bottom: isSmallScreen ? 16 : 20),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -367,12 +428,12 @@ class _OrderTimeline extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: step['isDone']
                                 ? _getStatusColor(status)
-                                : Colors.grey.shade300,
+                                : subtitleColor.withOpacity(0.3),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: step['isDone']
                                   ? _getStatusColor(status)
-                                  : Colors.grey.shade400,
+                                  : subtitleColor.withOpacity(0.4),
                               width: 2,
                             ),
                           ),
@@ -390,7 +451,7 @@ class _OrderTimeline extends StatelessWidget {
                             height: isSmallScreen ? 50 : 60,
                             color: step['isDone']
                                 ? _getStatusColor(status)
-                                : Colors.grey.shade300,
+                                : subtitleColor.withOpacity(0.3),
                           ),
                       ],
                     ),
@@ -405,9 +466,7 @@ class _OrderTimeline extends StatelessWidget {
                             step['title'],
                             style: TextStyle(
                               fontSize: isSmallScreen ? 14 : 16,
-                              color: step['isDone']
-                                  ? Colors.black
-                                  : Colors.grey.shade600,
+                              color: step['isDone'] ? textColor : subtitleColor,
                               fontWeight: step['isDone']
                                   ? FontWeight.w600
                                   : FontWeight.normal,
@@ -418,14 +477,14 @@ class _OrderTimeline extends StatelessWidget {
                             step['description'],
                             style: TextStyle(
                               fontSize: isSmallScreen ? 10 : 12,
-                              color: Colors.grey.shade500,
+                              color: subtitleColor,
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    // Update button - Only show on mobile if there's space
+                    // Update button
                     if (showUpdateButton) ...[
                       SizedBox(width: isSmallScreen ? 8 : 16),
                       SizedBox(
@@ -433,7 +492,7 @@ class _OrderTimeline extends StatelessWidget {
                         child: ElevatedButton(
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(
-                              Colors.deepPurple,
+                              primaryColor,
                             ),
                             padding: MaterialStateProperty.all(
                               EdgeInsets.symmetric(
@@ -466,7 +525,7 @@ class _OrderTimeline extends StatelessWidget {
                           child: Text(
                             'Update',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimary,
                               fontSize: isSmallScreen ? 10 : 12,
                             ),
                           ),
@@ -489,18 +548,26 @@ class _AddressSection extends StatelessWidget {
   final String orderId;
   final String userId;
   final bool isSmallScreen;
+  final Color cardColor;
+  final Color textColor;
+  final Color subtitleColor;
 
   const _AddressSection({
     required this.address,
     required this.orderId,
     required this.userId,
     required this.isSmallScreen,
+    required this.cardColor,
+    required this.textColor,
+    required this.subtitleColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      color: Colors.white,
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
       ),
@@ -514,12 +581,12 @@ class _AddressSection extends StatelessWidget {
               width: isSmallScreen ? 32 : 40,
               height: isSmallScreen ? 32 : 40,
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
+                color: theme.colorScheme.error.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.location_on,
-                color: Colors.red.shade600,
+                color: theme.colorScheme.error,
                 size: isSmallScreen ? 16 : 20,
               ),
             ),
@@ -533,6 +600,7 @@ class _AddressSection extends StatelessWidget {
                     style: TextStyle(
                       fontSize: isSmallScreen ? 14 : 16,
                       fontWeight: FontWeight.bold,
+                      color: textColor,
                     ),
                   ),
                   SizedBox(height: isSmallScreen ? 6 : 8),
@@ -541,7 +609,7 @@ class _AddressSection extends StatelessWidget {
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.black87,
+                      color: textColor,
                       fontSize: isSmallScreen ? 12 : 14,
                       height: 1.4,
                     ),
@@ -550,7 +618,7 @@ class _AddressSection extends StatelessWidget {
                   Text(
                     "Phone: +20 100 123 4567",
                     style: TextStyle(
-                      color: Colors.grey,
+                      color: subtitleColor,
                       fontSize: isSmallScreen ? 10 : 12,
                     ),
                   ),
@@ -560,7 +628,7 @@ class _AddressSection extends StatelessWidget {
             IconButton(
               icon: Icon(
                 Icons.edit,
-                color: Colors.grey.shade600,
+                color: subtitleColor,
                 size: isSmallScreen ? 18 : 20,
               ),
               onPressed: () {
@@ -574,6 +642,7 @@ class _AddressSection extends StatelessWidget {
   }
 
   void _showEditAddressDialog(BuildContext context) {
+    final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
     final controller = TextEditingController(text: address);
@@ -581,6 +650,7 @@ class _AddressSection extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
+        backgroundColor: theme.colorScheme.surface,
         insetPadding: EdgeInsets.all(isSmallScreen ? 12 : 20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(isSmallScreen ? 12 : 16),
@@ -601,6 +671,7 @@ class _AddressSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isSmallScreen ? 16 : 18,
                     fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onBackground,
                   ),
                 ),
                 SizedBox(height: isSmallScreen ? 12 : 16),
@@ -610,8 +681,12 @@ class _AddressSection extends StatelessWidget {
                     maxLines: null,
                     expands: true,
                     textAlignVertical: TextAlignVertical.top,
+                    style: TextStyle(color: theme.colorScheme.onBackground),
                     decoration: InputDecoration(
                       hintText: "Enter your delivery address",
+                      hintStyle: TextStyle(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                      ),
                       border: const OutlineInputBorder(),
                       contentPadding: EdgeInsets.all(isSmallScreen ? 12 : 16),
                     ),
@@ -626,7 +701,10 @@ class _AddressSection extends StatelessWidget {
                         onPressed: () => Navigator.pop(dialogContext),
                         child: Text(
                           "Cancel",
-                          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14 : 16,
+                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          ),
                         ),
                       ),
                     ),
@@ -673,9 +751,15 @@ class _AddressSection extends StatelessWidget {
                             );
                           }
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                        ),
                         child: Text(
                           "Save",
-                          style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14 : 16,
+                            color: theme.colorScheme.onPrimary,
+                          ),
                         ),
                       ),
                     ),
@@ -692,11 +776,14 @@ class _AddressSection extends StatelessWidget {
 
 class _ContactButton extends StatelessWidget {
   final bool isSmallScreen;
+  final Color textColor;
 
-  const _ContactButton({required this.isSmallScreen});
+  const _ContactButton({required this.isSmallScreen, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Column(
         children: [
@@ -704,8 +791,8 @@ class _ContactButton extends StatelessWidget {
             width: isSmallScreen ? double.infinity : null,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 padding: EdgeInsets.symmetric(
                   horizontal: isSmallScreen ? 24 : 32,
                   vertical: isSmallScreen ? 12 : 16,
@@ -736,7 +823,7 @@ class _ContactButton extends StatelessWidget {
             child: Text(
               "Call Delivery Agent",
               style: TextStyle(
-                color: Colors.deepPurple,
+                color: theme.colorScheme.primary,
                 fontSize: isSmallScreen ? 12 : 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -748,12 +835,14 @@ class _ContactButton extends StatelessWidget {
   }
 
   void _showContactOptions(BuildContext context) {
+    final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -772,6 +861,7 @@ class _ContactButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isSmallScreen ? 16 : 18,
                     fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onBackground,
                   ),
                 ),
                 SizedBox(height: isSmallScreen ? 16 : 20),
@@ -783,11 +873,17 @@ class _ContactButton extends StatelessWidget {
                   ),
                   title: Text(
                     "Call Support",
-                    style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      color: theme.colorScheme.onBackground,
+                    ),
                   ),
                   subtitle: Text(
                     "+20 100 123 4567",
-                    style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 12 : 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -801,11 +897,17 @@ class _ContactButton extends StatelessWidget {
                   ),
                   title: Text(
                     "Live Chat",
-                    style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      color: theme.colorScheme.onBackground,
+                    ),
                   ),
                   subtitle: Text(
                     "Chat with our support team",
-                    style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 12 : 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -819,11 +921,17 @@ class _ContactButton extends StatelessWidget {
                   ),
                   title: Text(
                     "Send Email",
-                    style: TextStyle(fontSize: isSmallScreen ? 14 : 16),
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      color: theme.colorScheme.onBackground,
+                    ),
                   ),
                   subtitle: Text(
                     "support@biskyShop.com",
-                    style: TextStyle(fontSize: isSmallScreen ? 12 : 14),
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 12 : 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
