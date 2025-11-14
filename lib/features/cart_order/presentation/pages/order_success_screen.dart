@@ -1,5 +1,5 @@
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
 import 'package:flutter/material.dart';
 
 class OrderSuccessScreen extends StatelessWidget {

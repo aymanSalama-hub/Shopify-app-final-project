@@ -1,12 +1,15 @@
 import 'dart:io';
 
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/profile_state.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_cubit.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'contact_support.dart';
+import 'help_screen.dart';
 
 class PersonScreen extends StatelessWidget {
   const PersonScreen({super.key});
@@ -236,8 +239,7 @@ class PersonScreen extends StatelessWidget {
             Icons.contact_support_outlined,
             Icons.chevron_right,
             () {
-              // Handle contact support
-            },
+Navigator.push(context, MaterialPageRoute(builder: (context) => ContactSupportScreen(),));            },
             theme,
             isSmallScreen,
           ),
@@ -247,7 +249,7 @@ class PersonScreen extends StatelessWidget {
             Icons.help_outline,
             Icons.chevron_right,
             () {
-              // Handle help & FAQ
+    Navigator.push(context, MaterialPageRoute(builder: (context) => HelpScreen(),));
             },
             theme,
             isSmallScreen,

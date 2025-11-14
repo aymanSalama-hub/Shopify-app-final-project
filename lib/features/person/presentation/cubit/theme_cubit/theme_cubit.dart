@@ -1,5 +1,5 @@
 // features/theme/presentation/cubit/theme_cubit.dart
-import 'package:bisky_shop/core/services/theme_service.dart';
+import 'package:Shopify/core/services/theme_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'theme_state.dart';

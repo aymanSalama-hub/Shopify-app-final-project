@@ -1,4 +1,4 @@
-import 'package:bisky_shop/features/on_boarding/presentation/pages/page_view_item.dart';
+import 'package:Shopify/features/on_boarding/presentation/pages/page_view_item.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,5 +1,5 @@
-import 'package:bisky_shop/features/details/presentation/cubit/addCart_state.dart';
-import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
+import 'package:Shopify/features/details/presentation/cubit/addCart_state.dart';
+import 'package:Shopify/features/home/data/model/product_response/product_response.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

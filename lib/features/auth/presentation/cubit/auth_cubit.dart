@@ -1,5 +1,5 @@
-import 'package:bisky_shop/core/constants/user_type.dart';
-import 'package:bisky_shop/features/auth/presentation/cubit/auths_states.dart';
+import 'package:Shopify/core/constants/user_type.dart';
+import 'package:Shopify/features/auth/presentation/cubit/auths_states.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';

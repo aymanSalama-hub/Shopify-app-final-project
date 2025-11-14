@@ -1,4 +1,4 @@
-import 'package:bisky_shop/features/on_boarding/presentation/pages/page_view.dart';
+import 'package:Shopify/features/on_boarding/presentation/pages/page_view.dart';
 import 'package:flutter/material.dart';
 
 class page_view_onboarding extends StatelessWidget {

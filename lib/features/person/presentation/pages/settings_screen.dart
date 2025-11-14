@@ -1,15 +1,25 @@
 import 'dart:io';
-
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/profile_state.dart';
+import 'package:Shopify/features/person/presentation/pages/privacy_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsScreen extends StatelessWidget {
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_cubit.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_state.dart';
+import 'package:Shopify/features/notification/presentation/pages/notification_page.dart';
+import '../../../../core/utils/Custom_Button.dart';
+
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -97,9 +107,7 @@ class SettingsScreen extends StatelessWidget {
                     cubit,
                     state,
                   ),
-
                   SizedBox(height: isSmallScreen ? 20 : 24),
-
                   // Settings Section
                   _buildSettingsSection(
                     context,
@@ -109,18 +117,7 @@ class SettingsScreen extends StatelessWidget {
                     titleColor,
                     dividerColor,
                   ),
-
                   SizedBox(height: isSmallScreen ? 20 : 24),
-
-                  // Additional Options Section
-                  _buildAdditionalOptionsSection(
-                    context,
-                    theme,
-                    isSmallScreen,
-                    cardColor,
-                    titleColor,
-                    dividerColor,
-                  ),
                 ],
               ),
             ),
@@ -131,16 +128,16 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildAccountSection(
-    BuildContext context,
-    ThemeData theme,
-    bool isSmallScreen,
-    Color cardColor,
-    Color titleColor,
-    Color subtitleColor,
-    Color dividerColor,
-    ProfileCubit cubit,
-    ProfileState state,
-  ) {
+      BuildContext context,
+      ThemeData theme,
+      bool isSmallScreen,
+      Color cardColor,
+      Color titleColor,
+      Color subtitleColor,
+      Color dividerColor,
+      ProfileCubit cubit,
+      ProfileState state,
+      ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       decoration: BoxDecoration(
@@ -206,12 +203,9 @@ class SettingsScreen extends StatelessWidget {
                             if (url.startsWith('http')) {
                               return NetworkImage(url) as ImageProvider<Object>;
                             }
-                            return FileImage(File(url))
-                                as ImageProvider<Object>;
+                            return FileImage(File(url)) as ImageProvider<Object>;
                           })(),
-                          onBackgroundImageError: (exception, stackTrace) {
-                            // Handle image error
-                          },
+                          onBackgroundImageError: (exception, stackTrace) {},
                         ),
                       ),
                     SizedBox(width: isSmallScreen ? 12 : 16),
@@ -256,13 +250,13 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsSection(
-    BuildContext context,
-    ThemeData theme,
-    bool isSmallScreen,
-    Color cardColor,
-    Color titleColor,
-    Color dividerColor,
-  ) {
+      BuildContext context,
+      ThemeData theme,
+      bool isSmallScreen,
+      Color cardColor,
+      Color titleColor,
+      Color dividerColor,
+      ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       decoration: BoxDecoration(
@@ -291,8 +285,11 @@ class SettingsScreen extends StatelessWidget {
             'Notifications',
             Icons.notifications_outlined,
             Icons.chevron_right,
-            () {
-              // Handle notifications
+                () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationsPage()),
+              );
             },
             theme,
             isSmallScreen,
@@ -303,9 +300,7 @@ class SettingsScreen extends StatelessWidget {
             'Language',
             Icons.language_outlined,
             Icons.chevron_right,
-            () {
-              // Handle language
-            },
+                () => _showLanguageDialog(context),
             theme,
             isSmallScreen,
             titleColor,
@@ -315,8 +310,11 @@ class SettingsScreen extends StatelessWidget {
             'Privacy & Security',
             Icons.lock_outline,
             Icons.chevron_right,
-            () {
-              // Handle privacy
+                () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PrivacyScreen()),
+              );
             },
             theme,
             isSmallScreen,
@@ -327,7 +325,7 @@ class SettingsScreen extends StatelessWidget {
             'Appearance',
             Icons.palette_outlined,
             Icons.chevron_right,
-            () {
+                () {
               pushTo(context, Routs.appearance);
             },
             theme,
@@ -339,99 +337,15 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdditionalOptionsSection(
-    BuildContext context,
-    ThemeData theme,
-    bool isSmallScreen,
-    Color cardColor,
-    Color titleColor,
-    Color dividerColor,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Support & About',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: titleColor,
-            ),
-          ),
-          SizedBox(height: isSmallScreen ? 12 : 16),
-          _buildSettingsButton(
-            'About Us',
-            Icons.info_outline,
-            Icons.chevron_right,
-            () {
-              // Handle about us
-            },
-            theme,
-            isSmallScreen,
-            titleColor,
-          ),
-          _buildDivider(dividerColor),
-          _buildSettingsButton(
-            'Help & Support',
-            Icons.help_outline,
-            Icons.chevron_right,
-            () {
-              // Handle help
-            },
-            theme,
-            isSmallScreen,
-            titleColor,
-          ),
-          _buildDivider(dividerColor),
-          _buildSettingsButton(
-            'Terms of Service',
-            Icons.description_outlined,
-            Icons.chevron_right,
-            () {
-              // Handle terms
-            },
-            theme,
-            isSmallScreen,
-            titleColor,
-          ),
-          _buildDivider(dividerColor),
-          _buildSettingsButton(
-            'Privacy Policy',
-            Icons.privacy_tip_outlined,
-            Icons.chevron_right,
-            () {
-              // Handle privacy policy
-            },
-            theme,
-            isSmallScreen,
-            titleColor,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSettingsButton(
-    String text,
-    IconData leadingIcon,
-    IconData trailingIcon,
-    VoidCallback onTap,
-    ThemeData theme,
-    bool isSmallScreen,
-    Color titleColor,
-  ) {
+      String text,
+      IconData leadingIcon,
+      IconData trailingIcon,
+      VoidCallback onTap,
+      ThemeData theme,
+      bool isSmallScreen,
+      Color titleColor,
+      ) {
     final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.5);
 
     return Material(
@@ -485,5 +399,99 @@ class SettingsScreen extends StatelessWidget {
       indent: 16,
       endIndent: 16,
     );
+  }
+
+  void _showLanguageDialog(BuildContext context) async {
+    String savedLang = await LanguageService.getLanguage();
+    String selectedLang = savedLang;
+
+    final theme = Theme.of(context);
+    final bool isDarkMode = theme.brightness == Brightness.dark;
+    final bgColor = theme.dialogBackgroundColor;
+    final textColor = theme.colorScheme.onBackground;
+    final subTextColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final buttonColor = theme.colorScheme.primary;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            backgroundColor: bgColor,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: RoundCheckBox(
+                    size: 30,
+                    isChecked: selectedLang == 'ar',
+                    checkedColor: buttonColor,
+                    onTap: (selected) {
+                      setState(() {
+                        selectedLang = 'ar';
+                      });
+                    },
+                  ),
+                  title: Text(
+                    'العربية',
+                    style: TextStyle(color: textColor, fontSize: 16),
+                  ),
+                ),
+                ListTile(
+                  leading: RoundCheckBox(
+                    size: 30,
+                    isChecked: selectedLang == 'en',
+                    checkedColor: buttonColor,
+                    onTap: (selected) {
+                      setState(() {
+                        selectedLang = 'en';
+                      });
+                    },
+                  ),
+                  title: Text(
+                    'English',
+                    style: TextStyle(color: textColor, fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Genral_Button(
+                    text: 'Apply',
+                    ontap: () async {
+                      await LanguageService.saveLanguage(selectedLang);
+                      Navigator.pop(context);
+                    },
+
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Text(
+                    'Close',
+                    style: TextStyle(color: subTextColor, fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class LanguageService {
+  static const String key = 'selected_language';
+
+  static Future<void> saveLanguage(String lang) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, lang);
+  }
+
+  static Future<String> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? 'en';
   }
 }

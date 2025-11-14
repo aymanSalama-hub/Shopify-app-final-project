@@ -1,6 +1,6 @@
-import 'package:bisky_shop/core/constants/size_responsive.dart';
-import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
+import 'package:Shopify/core/constants/size_responsive.dart';
+import 'package:Shopify/core/utils/app_colors.dart';
+import 'package:Shopify/features/home/data/model/product_response/product_response.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';

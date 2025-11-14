@@ -1,6 +1,6 @@
 
 
-import 'package:bisky_shop/core/services/api_endpoints.dart';
+import 'package:Shopify/core/services/api_endpoints.dart';
 import 'package:dio/dio.dart';
 
 class DioProvider2 {

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/profile_state.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_cubit.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

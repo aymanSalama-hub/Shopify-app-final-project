@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:bisky_shop/core/services/api_endpoints.dart';
-import 'package:bisky_shop/core/services/dio_provider2.dart';
-import 'package:bisky_shop/features/home/data/model/product_response/product_response.dart';
+import 'package:Shopify/core/services/api_endpoints.dart';
+import 'package:Shopify/core/services/dio_provider2.dart';
+import 'package:Shopify/features/home/data/model/product_response/product_response.dart';
 
 class HomeRepo {
   static Future<List<ProductResponse3?>?> getFeature2() async {

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bisky_shop/features/cart_order/data/model/model_cart.dart';
-import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
-import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
+import 'package:Shopify/features/cart_order/data/model/model_cart.dart';
+import 'package:Shopify/features/cart_order/data/model/order_model.dart';
+import 'package:Shopify/features/cart_order/presentation/cubit/card_order_state.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

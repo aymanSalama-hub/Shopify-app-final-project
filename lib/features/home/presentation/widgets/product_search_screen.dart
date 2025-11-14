@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bisky_shop/core/constants/size_responsive.dart';
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
+import 'package:Shopify/core/constants/size_responsive.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
 import '../cubit/home_cubit.dart';
 import '../cubit/home_state.dart';
 import '../widgets/product_card.dart';

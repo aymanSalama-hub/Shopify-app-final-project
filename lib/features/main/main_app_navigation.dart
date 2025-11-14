@@ -1,10 +1,10 @@
-import 'package:bisky_shop/core/constants/app_images.dart';
-import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
-import 'package:bisky_shop/features/favorite/presentation/pages/favorite_screen.dart';
-import 'package:bisky_shop/features/home/presentation/pages/home_screen.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
-import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
+import 'package:Shopify/core/constants/app_images.dart';
+import 'package:Shopify/core/utils/app_colors.dart';
+import 'package:Shopify/features/cart_order/presentation/pages/cart.dart';
+import 'package:Shopify/features/favorite/presentation/pages/favorite_screen.dart';
+import 'package:Shopify/features/home/presentation/pages/home_screen.dart';
+import 'package:Shopify/features/person/presentation/cubit/profile_cubit.dart';
+import 'package:Shopify/features/person/presentation/pages/person_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';

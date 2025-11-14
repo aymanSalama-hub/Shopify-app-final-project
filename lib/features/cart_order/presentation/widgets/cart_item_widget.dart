@@ -1,4 +1,4 @@
-import 'package:bisky_shop/features/cart_order/data/model/model_cart.dart';
+import 'package:Shopify/features/cart_order/data/model/model_cart.dart';
 import 'package:flutter/material.dart';
 
 class CartItemWidget extends StatelessWidget {

@@ -1,6 +1,6 @@
-import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
-import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_cubit.dart';
-import 'package:bisky_shop/features/cart_order/presentation/cubit/card_order_state.dart';
+import 'package:Shopify/features/cart_order/data/model/order_model.dart';
+import 'package:Shopify/features/cart_order/presentation/cubit/card_order_cubit.dart';
+import 'package:Shopify/features/cart_order/presentation/cubit/card_order_state.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

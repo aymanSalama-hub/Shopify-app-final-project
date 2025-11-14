@@ -1,10 +1,10 @@
 // lib/features/details/presentation/pages/product_details_screen.dart
 import 'dart:math';
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/features/details/presentation/cubit/addCart_cubit.dart';
-import 'package:bisky_shop/features/details/presentation/cubit/addCart_state.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/core/utils/app_colors.dart';
+import 'package:Shopify/features/details/presentation/cubit/addCart_cubit.dart';
+import 'package:Shopify/features/details/presentation/cubit/addCart_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';

@@ -1,26 +1,28 @@
 import 'dart:io';
 
-import 'package:bisky_shop/core/constants/app_images.dart';
-import 'package:bisky_shop/core/constants/app_strings.dart';
-import 'package:bisky_shop/core/constants/size_responsive.dart';
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/core/utils/app_colors.dart';
-import 'package:bisky_shop/core/utils/text_styles.dart';
-import 'package:bisky_shop/features/home/presentation/cubit/home_cubit.dart';
-import 'package:bisky_shop/features/home/presentation/cubit/home_state.dart';
-import 'package:bisky_shop/features/home/presentation/widgets/home_slider.dart';
-import 'package:bisky_shop/features/home/presentation/widgets/product_card.dart';
+import 'package:Shopify/core/constants/app_images.dart';
+import 'package:Shopify/core/constants/app_strings.dart';
+import 'package:Shopify/core/constants/size_responsive.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/core/utils/app_colors.dart';
+import 'package:Shopify/core/utils/text_styles.dart';
+import 'package:Shopify/features/home/presentation/cubit/home_cubit.dart';
+import 'package:Shopify/features/home/presentation/cubit/home_state.dart';
+import 'package:Shopify/features/home/presentation/widgets/home_slider.dart';
+import 'package:Shopify/features/home/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../notification/presentation/pages/notification_page.dart';
 import '../widgets/product_search_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key, required this.name});
+  static const String routeName = '/homeScreen';
   String name;
 
   @override
@@ -82,7 +84,9 @@ class HomeScreen extends StatelessWidget {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage(),));
+                  },
                   icon: SvgPicture.asset(
                     AppImages.notificationSvg,
                     color: Theme.of(context).colorScheme.onSurface,

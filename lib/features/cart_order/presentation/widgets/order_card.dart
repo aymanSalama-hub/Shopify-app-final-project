@@ -1,8 +1,8 @@
 // features/cart_order/presentation/widgets/order_card.dart
-import 'package:bisky_shop/core/constants/app_images.dart';
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/features/cart_order/data/model/order_model.dart';
+import 'package:Shopify/core/constants/app_images.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/features/cart_order/data/model/order_model.dart';
 import 'package:flutter/material.dart';
 
 class OrderCard extends StatelessWidget {

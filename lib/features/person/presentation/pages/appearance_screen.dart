@@ -1,6 +1,6 @@
 // features/settings/presentation/screens/appearance_screen.dart
-import 'package:bisky_shop/core/routes/navigation.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/theme_cubit/theme_cubit.dart';
+import 'package:Shopify/core/routes/navigation.dart';
+import 'package:Shopify/features/person/presentation/cubit/theme_cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,4 +1,4 @@
-import 'package:bisky_shop/core/constants/size_responsive.dart';
+import 'package:Shopify/core/constants/size_responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

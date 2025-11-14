@@ -1,6 +1,6 @@
-import 'package:bisky_shop/core/routes/routs.dart';
-import 'package:bisky_shop/core/services/theme_service.dart';
-import 'package:bisky_shop/features/person/presentation/cubit/theme_cubit/theme_cubit.dart';
+import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/core/services/theme_service.dart';
+import 'package:Shopify/features/person/presentation/cubit/theme_cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

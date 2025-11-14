@@ -1,6 +1,6 @@
 // lib/features/favorites/presentation/cubit/favorites_cubit.dart
 import 'package:bloc/bloc.dart';
-import 'package:bisky_shop/features/home/data/repo/home_repo.dart';
+import 'package:Shopify/features/home/data/repo/home_repo.dart';
 import '../../../details/presentation/widgets/shared_pref_favourite_icon.dart';
 import '../../../home/data/model/product_response/product_response.dart';
 import 'favourite_state.dart';
