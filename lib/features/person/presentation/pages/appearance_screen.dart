@@ -33,7 +33,7 @@ class AppearanceScreen extends StatelessWidget {
                 ),
                 child: IconButton(
                   icon: Icon(
-                    Icons.arrow_back_ios_new, 
+                    Icons.arrow_back_ios_new,
                     size: isSmallScreen ? 18 : 22,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -72,10 +72,14 @@ class AppearanceScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Theme Selection Section
-                  _buildThemeSelectionSection(context, currentTheme, isSmallScreen),
-                  
+                  _buildThemeSelectionSection(
+                    context,
+                    currentTheme,
+                    isSmallScreen,
+                  ),
+
                   SizedBox(height: isSmallScreen ? 20 : 24),
-                  
+
                   // Preview Section
                   _buildPreviewSection(context, currentTheme, isSmallScreen),
                 ],
@@ -119,7 +123,7 @@ class AppearanceScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: isSmallScreen ? 12 : 16),
-          
+
           _buildThemeOption(
             context: context,
             title: 'Light Mode',
@@ -177,16 +181,16 @@ class AppearanceScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                    ? theme.colorScheme.primary.withOpacity(0.2)
-                    : theme.colorScheme.primary.withOpacity(0.1),
+                  color: isSelected
+                      ? theme.colorScheme.primary.withOpacity(0.2)
+                      : theme.colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
-                  color: isSelected 
-                    ? theme.colorScheme.primary 
-                    : theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withOpacity(0.7),
                   size: isSmallScreen ? 20 : 22,
                 ),
               ),
@@ -256,7 +260,7 @@ class AppearanceScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: isSmallScreen ? 12 : 16),
-          
+
           // Preview card showing how the theme looks
           Container(
             width: double.infinity,
@@ -264,9 +268,7 @@ class AppearanceScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: theme.colorScheme.background,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: theme.dividerColor.withOpacity(0.3),
-              ),
+              border: Border.all(color: theme.dividerColor.withOpacity(0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

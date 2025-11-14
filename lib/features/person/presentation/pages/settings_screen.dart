@@ -1,15 +1,17 @@
 import 'dart:io';
-import 'package:Shopify/features/person/presentation/pages/privacy_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:roundcheckbox/roundcheckbox.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 import 'package:Shopify/core/routes/navigation.dart';
 import 'package:Shopify/core/routes/routs.dart';
+import 'package:Shopify/features/notification/presentation/pages/notification_page.dart';
 import 'package:Shopify/features/person/presentation/cubit/profile_cubit.dart';
 import 'package:Shopify/features/person/presentation/cubit/profile_state.dart';
-import 'package:Shopify/features/notification/presentation/pages/notification_page.dart';
+import 'package:Shopify/features/person/presentation/pages/privacy_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../../core/utils/Custom_Button.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -128,16 +130,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAccountSection(
-      BuildContext context,
-      ThemeData theme,
-      bool isSmallScreen,
-      Color cardColor,
-      Color titleColor,
-      Color subtitleColor,
-      Color dividerColor,
-      ProfileCubit cubit,
-      ProfileState state,
-      ) {
+    BuildContext context,
+    ThemeData theme,
+    bool isSmallScreen,
+    Color cardColor,
+    Color titleColor,
+    Color subtitleColor,
+    Color dividerColor,
+    ProfileCubit cubit,
+    ProfileState state,
+  ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       decoration: BoxDecoration(
@@ -203,7 +205,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             if (url.startsWith('http')) {
                               return NetworkImage(url) as ImageProvider<Object>;
                             }
-                            return FileImage(File(url)) as ImageProvider<Object>;
+                            return FileImage(File(url))
+                                as ImageProvider<Object>;
                           })(),
                           onBackgroundImageError: (exception, stackTrace) {},
                         ),
@@ -250,13 +253,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSettingsSection(
-      BuildContext context,
-      ThemeData theme,
-      bool isSmallScreen,
-      Color cardColor,
-      Color titleColor,
-      Color dividerColor,
-      ) {
+    BuildContext context,
+    ThemeData theme,
+    bool isSmallScreen,
+    Color cardColor,
+    Color titleColor,
+    Color dividerColor,
+  ) {
     return Container(
       padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
       decoration: BoxDecoration(
@@ -285,10 +288,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Notifications',
             Icons.notifications_outlined,
             Icons.chevron_right,
-                () {
+            () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NotificationsPage()),
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsPage(),
+                ),
               );
             },
             theme,
@@ -300,7 +305,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Language',
             Icons.language_outlined,
             Icons.chevron_right,
-                () => _showLanguageDialog(context),
+            () => _showLanguageDialog(context),
             theme,
             isSmallScreen,
             titleColor,
@@ -310,7 +315,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Privacy & Security',
             Icons.lock_outline,
             Icons.chevron_right,
-                () {
+            () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const PrivacyScreen()),
@@ -325,7 +330,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Appearance',
             Icons.palette_outlined,
             Icons.chevron_right,
-                () {
+            () {
               pushTo(context, Routs.appearance);
             },
             theme,
@@ -338,14 +343,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSettingsButton(
-      String text,
-      IconData leadingIcon,
-      IconData trailingIcon,
-      VoidCallback onTap,
-      ThemeData theme,
-      bool isSmallScreen,
-      Color titleColor,
-      ) {
+    String text,
+    IconData leadingIcon,
+    IconData trailingIcon,
+    VoidCallback onTap,
+    ThemeData theme,
+    bool isSmallScreen,
+    Color titleColor,
+  ) {
     final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.5);
 
     return Material(
@@ -462,7 +467,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       await LanguageService.saveLanguage(selectedLang);
                       Navigator.pop(context);
                     },
-
                   ),
                 ),
                 const SizedBox(height: 8),
