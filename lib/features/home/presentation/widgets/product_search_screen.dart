@@ -25,18 +25,28 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return BlocProvider(
       create: (context) => HomeCubit()..fechHomeData(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          iconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           elevation: 0,
           title: TextField(
             controller: _controller,
-            decoration: const InputDecoration(
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            decoration: InputDecoration(
               hintText: 'Discover your Product...',
+              hintStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
               border: InputBorder.none,
             ),
             onChanged: (value) {
@@ -46,7 +56,10 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           actions: [
             if (_controller.text.isNotEmpty)
               IconButton(
-                icon: const Icon(Icons.cancel, color: Colors.black),
+                icon: Icon(
+                  Icons.cancel, 
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 onPressed: () {
                   _controller.clear();
                   setState(() {});
@@ -61,14 +74,51 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               final cubit = BlocProvider.of<HomeCubit>(context);
 
               if (state is LoadingHomeSTate) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                );
               }
 
               if (state is ErrorHomeState) {
                 return Center(
-                  child: Text(
-                    state.message,
-                    style: const TextStyle(color: Colors.red),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: Sizeresponsive.defaultSize! * 6,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      SizedBox(height: Sizeresponsive.defaultSize! * 2),
+                      Text(
+                        'Error loading products',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: Sizeresponsive.defaultSize! * 1.8,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: Sizeresponsive.defaultSize! * 1),
+                      Text(
+                        state.message,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          fontSize: Sizeresponsive.defaultSize! * 1.4,
+                        ),
+                      ),
+                      SizedBox(height: Sizeresponsive.defaultSize! * 2),
+                      ElevatedButton(
+                        onPressed: () => cubit.fechHomeData(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        child: Text('Try Again'),
+                      ),
+                    ],
                   ),
                 );
               }
@@ -92,50 +142,89 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         children: [
                           Text(
                             'Results for "${_controller.text}"',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: Sizeresponsive.defaultSize! * 1.6,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
                           Text(
-                            '${filteredList.length} Results Found',
-                            style: const TextStyle(
-                              color: Color(0xFF6055D8),
-                              fontSize: 14,
+                            '${filteredList.length} ${filteredList.length == 1 ? 'Result' : 'Results'} Found',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: Sizeresponsive.defaultSize! * 1.4,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: Sizeresponsive.defaultSize! * 1),
                   Expanded(
                     child: filteredList.isEmpty
                         ? Center(
-                      child: Text(
-                        _controller.text.isEmpty
-                            ? 'Start typing to search products...'
-                            : 'No products found for "${_controller.text}"',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    )
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (_controller.text.isEmpty)
+                                  Icon(
+                                    Icons.search,
+                                    size: Sizeresponsive.defaultSize! * 8,
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                                  )
+                                else
+                                  Icon(
+                                    Icons.search_off,
+                                    size: Sizeresponsive.defaultSize! * 8,
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                                  ),
+                                SizedBox(height: Sizeresponsive.defaultSize! * 2),
+                                Text(
+                                  _controller.text.isEmpty
+                                      ? 'Start typing to search products...'
+                                      : 'No products found for "${_controller.text}"',
+                                  style: TextStyle(
+                                    fontSize: Sizeresponsive.defaultSize! * 1.6,
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                    fontWeight: _controller.text.isEmpty 
+                                        ? FontWeight.normal 
+                                        : FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                if (_controller.text.isNotEmpty)
+                                  Padding(
+                                    padding: EdgeInsets.only(top: Sizeresponsive.defaultSize! * 1),
+                                    child: Text(
+                                      'Try different keywords or browse all products',
+                                      style: TextStyle(
+                                        fontSize: Sizeresponsive.defaultSize! * 1.3,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          )
                         : GridView.builder(
-                      itemCount: filteredList.length,
-                      gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        childAspectRatio: 0.9,
-                      ),
-                      itemBuilder: (context, index) {
-                        final product = filteredList[index];
-                        return GestureDetector(
-                          onTap: () {
-                            pushTo(context, Routs.details, extra: product);
-                          },
-                          child: ProductCard(item: product),
-                        );
-                      },
-                    ),
+                            itemCount: filteredList.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: Sizeresponsive.defaultSize! * 1.5,
+                              crossAxisSpacing: Sizeresponsive.defaultSize! * 1.5,
+                              childAspectRatio: 0.85,
+                            ),
+                            itemBuilder: (context, index) {
+                              final product = filteredList[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  pushTo(context, Routs.details, extra: product);
+                                },
+                                child: ProductCard(item: product),
+                              );
+                            },
+                          ),
                   ),
                 ],
               );

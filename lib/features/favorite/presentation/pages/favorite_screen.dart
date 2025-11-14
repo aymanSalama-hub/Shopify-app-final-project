@@ -20,12 +20,19 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text('Favourit',
-            style: TextStyle(
-               color:  Color(0xFF6C63FF), fontSize: 30, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        title: Text(
+          'Favourites',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -33,9 +40,20 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         child: BlocBuilder<FavoritesCubit, FavoritesState>(
           builder: (context, state) {
             if (state is FavoritesLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              );
             } else if (state is FavoritesError) {
-              return Center(child: Text('Error: ${state.message}'));
+              return Center(
+                child: Text(
+                  'Error: ${state.message}',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+              );
             } else if (state is FavoritesLoaded) {
               final favouriteProducts = state.products;
 
@@ -47,7 +65,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       Icon(
                         Icons.favorite_border,
                         size: 100,
-                        color: const Color(0xFF6C63FF),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(height: 24),
                       Text(
@@ -55,7 +73,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey[700],
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -64,7 +82,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey[500],
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -82,27 +102,40 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black12, blurRadius: 5)
+                      color: Theme.of(context).cardColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: isDarkMode ? Colors.black54 : Colors.black12,
+                          blurRadius: 5,
+                        ),
                       ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Material(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           elevation: 6,
                           borderRadius: BorderRadius.circular(60),
                           child: ClipRRect(
-
                             borderRadius: BorderRadius.circular(60),
                             child: SizedBox(
                               height: 95,
                               width: 95,
-                              child: product.image != null && product.image!.isNotEmpty
-                                  ? Image.network(product.image!, fit: BoxFit.cover)
-                                  : Image.asset('assets/images/notfound.png', fit: BoxFit.cover),
+                              child:
+                                  product.image != null &&
+                                      product.image!.isNotEmpty
+                                  ? Image.network(
+                                      product.image!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/notfound.png',
+                                      fit: BoxFit.cover,
+                                      color: isDarkMode
+                                          ? Colors.grey[400]
+                                          : null,
+                                    ),
                             ),
                           ),
                         ),
@@ -112,34 +145,53 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(product.title ?? 'No title',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 15)),
-                              SizedBox(height: 10,),
+                              Text(
+                                product.title ?? 'No title',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onBackground,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
                                   Text(
                                     '\$${product.price?.toStringAsFixed(2) ?? '0.00'}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: Color(0xFF6C63FF)),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
                                   ),
                                   const SizedBox(width: 10),
                                   if (product.rating?.rate != null)
                                     Row(
                                       children: [
-                                        const Icon(Icons.star, color: Colors.amber, size: 14),
+                                        Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                          size: 14,
+                                        ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          (product.rating!.rate!).toStringAsFixed(1),
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
+                                          (product.rating!.rate!)
+                                              .toStringAsFixed(1),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onBackground,
+                                          ),
                                         ),
                                       ],
                                     ),
                                 ],
                               ),
-
                             ],
                           ),
                         ),
@@ -147,9 +199,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           alignment: Alignment.topRight,
                           child: IconButton(
                             onPressed: () async {
-                              await context.read<FavoritesCubit>().removeFavorite(product.id.toString());
+                              await context
+                                  .read<FavoritesCubit>()
+                                  .removeFavorite(product.id.toString());
                             },
-                            icon: const Icon(Icons.cancel),
+                            icon: Icon(
+                              Icons.cancel,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                           ),
                         ),
                       ],

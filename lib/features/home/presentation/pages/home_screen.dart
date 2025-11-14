@@ -31,6 +31,8 @@ class HomeScreen extends StatelessWidget {
     final sh = Sizeresponsive.screenHeight!;
     final ds = Sizeresponsive.defaultSize!;
 
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return BlocProvider(
       create: (context) => HomeCubit()..fechHomeData(),
       child: BlocBuilder<HomeCubit, HomeState>(
@@ -38,7 +40,7 @@ class HomeScreen extends StatelessWidget {
           var cubit = context.read<HomeCubit>();
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               title: Row(
                 children: [
                   CircleAvatar(
@@ -60,11 +62,19 @@ class HomeScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Hello!", style: TextStyles.styleSize12),
+                      Text(
+                        "Hello!",
+                        style: TextStyles.styleSize12.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
                       Gap(ds * 0.5),
                       Text(
                         cubit.name == '' ? name : cubit.name,
-                        style: TextStyles.styleSize14,
+                        style: TextStyles.styleSize14.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
@@ -73,15 +83,18 @@ class HomeScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () {},
-                  icon: SvgPicture.asset(AppImages.notificationSvg),
+                  icon: SvgPicture.asset(
+                    AppImages.notificationSvg,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ],
             ),
 
             body: SafeArea(
               child: RefreshIndicator(
-                color: AppColors.primayColor,
-                backgroundColor: Colors.white,
+                color: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 onRefresh: () async {
                   await cubit.fechHomeData();
                 },
@@ -97,10 +110,12 @@ class HomeScreen extends StatelessWidget {
                     child: Skeletonizer(
                       enabled: state is! SuccessHomeState,
                       effect: ShimmerEffect(
-                        baseColor: AppColors.backgroundColorCart,
-                        highlightColor: AppColors.lightGrayColor.withValues(
-                          alpha: .6,
-                        ),
+                        baseColor: isDarkMode
+                            ? Colors.grey[800]!
+                            : AppColors.backgroundColorCart,
+                        highlightColor: isDarkMode
+                            ? Colors.grey[600]!
+                            : AppColors.lightGrayColor.withValues(alpha: .6),
                         duration: const Duration(seconds: 1),
                       ),
                       child: Column(
@@ -122,17 +137,29 @@ class HomeScreen extends StatelessWidget {
                                 vertical: 12,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey[200],
+                                color: isDarkMode
+                                    ? Colors.grey[800]!
+                                    : Colors.grey[200],
                                 borderRadius: BorderRadius.circular(30),
+                                border: isDarkMode
+                                    ? Border.all(color: Colors.grey[700]!)
+                                    : null,
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.search, color: Colors.grey[600]),
+                                  Icon(
+                                    Icons.search,
+                                    color: isDarkMode
+                                        ? Colors.grey[400]
+                                        : Colors.grey[600],
+                                  ),
                                   const SizedBox(width: 10),
                                   Text(
                                     "Discover your Product...",
                                     style: TextStyle(
-                                      color: Colors.grey[600],
+                                      color: isDarkMode
+                                          ? Colors.grey[400]
+                                          : Colors.grey[600],
                                       fontSize: 16,
                                     ),
                                   ),
@@ -148,6 +175,7 @@ class HomeScreen extends StatelessWidget {
                             AppStrings.featured,
                             style: TextStyles.styleSize18.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                           ),
                           Gap(ds * 1.2),
@@ -185,6 +213,9 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: ds * 1.8,
                                   fontWeight: FontWeight.bold,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onBackground,
                                 ),
                               ),
                               GestureDetector(
@@ -194,8 +225,11 @@ class HomeScreen extends StatelessWidget {
                                 child: Text(
                                   AppStrings.seeAll,
                                   style: TextStyle(
-                                    color: Colors.deepPurple,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: ds * 1.4,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
