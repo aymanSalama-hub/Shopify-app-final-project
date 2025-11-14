@@ -3,14 +3,13 @@ import 'package:bisky_shop/core/utils/app_colors.dart';
 import 'package:bisky_shop/features/cart_order/presentation/pages/cart.dart';
 import 'package:bisky_shop/features/favorite/presentation/pages/favorite_screen.dart';
 import 'package:bisky_shop/features/home/presentation/pages/home_screen.dart';
-import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
 import 'package:bisky_shop/features/person/presentation/cubit/profile_cubit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bisky_shop/features/person/presentation/pages/person_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../favorite/presentation/cubit/favourite_cubit.dart';
-
 
 class MainAppNavigationScreen extends StatefulWidget {
   const MainAppNavigationScreen({super.key, required this.name});
@@ -58,7 +57,7 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
         },
         items: [
           btmNavBarItem(path: AppImages.homeSvg, label: 'Home'),
-          btmNavBarItem(path: AppImages.searchSvg, label: ' Favorite'),
+          btmNavBarItem(icon: Icons.favorite, label: ' Favorite'),
           btmNavBarItem(path: AppImages.lockSvg, label: 'Lock'),
           btmNavBarItem(path: AppImages.profileSvg, label: 'Profile'),
         ],
@@ -67,23 +66,35 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
   }
 
   BottomNavigationBarItem btmNavBarItem({
-    required String path,
+    String? path,
     required String label,
+    IconData? icon,
   }) {
     return BottomNavigationBarItem(
-      activeIcon: SvgPicture.asset(
-        width: 24,
-        height: 24,
-        path,
-        colorFilter: ColorFilter.mode(AppColors.primayColor, BlendMode.srcIn),
-      ),
-      icon: SvgPicture.asset(
-        path,
-        width: 24,
-        height: 24,
+      activeIcon: path != null
+          ? SvgPicture.asset(
+              width: 24,
+              height: 24,
+              path,
+              colorFilter: ColorFilter.mode(
+                AppColors.primayColor,
+                BlendMode.srcIn,
+              ),
+            )
+          : Icon(
+              icon!,
+              color: AppColors.primayColor,
+              blendMode: BlendMode.srcIn,
+            ),
+      icon: path != null
+          ? SvgPicture.asset(
+              path,
+              width: 24,
+              height: 24,
 
-        colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-      ),
+              colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+            )
+          : Icon(icon!, color: Colors.grey, blendMode: BlendMode.srcIn),
       label: label,
     );
   }

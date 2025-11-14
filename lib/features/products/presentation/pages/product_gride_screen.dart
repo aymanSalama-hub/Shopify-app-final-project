@@ -19,6 +19,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     // عدد الأعمدة حسب عرض الشاشة
     int crossAxisCount;
@@ -33,6 +34,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
     return BlocProvider(
       create: (context) => HomeCubit()..fechHomeData(),
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Stack(
           children: [
             // محتوى الصفحة: GridView
@@ -48,7 +50,11 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                   final cubit = context.read<HomeCubit>();
 
                   if (state is LoadingHomeSTate) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    );
                   }
 
                   if (state is ErrorHomeState) {
@@ -56,7 +62,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                       child: Text(
                         state.message,
                         style: TextStyle(
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                           fontSize: Sizeresponsive.defaultSize! * 2,
                         ),
                       ),
@@ -66,11 +72,38 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                   if (cubit.productList3 == null ||
                       cubit.productList3!.isEmpty) {
                     return Center(
-                      child: Text(
-                        "No products available.",
-                        style: TextStyle(
-                          fontSize: Sizeresponsive.defaultSize! * 2,
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: Sizeresponsive.defaultSize! * 8,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.5),
+                          ),
+                          SizedBox(height: Sizeresponsive.defaultSize! * 2),
+                          Text(
+                            "No products available",
+                            style: TextStyle(
+                              fontSize: Sizeresponsive.defaultSize! * 2,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.7),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: Sizeresponsive.defaultSize! * 1),
+                          Text(
+                            "Check back later for new products",
+                            style: TextStyle(
+                              fontSize: Sizeresponsive.defaultSize! * 1.6,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -108,7 +141,27 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                 left: Sizeresponsive.defaultSize! * 2,
                 right: Sizeresponsive.defaultSize! * 2,
               ),
-              color: Colors.transparent,
+              decoration: BoxDecoration(
+                color:
+                    Theme.of(context).appBarTheme.backgroundColor ??
+                    (isDarkMode
+                        ? Colors.black.withOpacity(0.8)
+                        : Colors.white.withOpacity(0.9)),
+                boxShadow: [
+                  if (isDarkMode)
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    )
+                  else
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -118,7 +171,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                       IconButton(
                         icon: Icon(
                           Icons.arrow_back,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           size: Sizeresponsive.defaultSize! * 3,
                         ),
                         onPressed: () => Navigator.pop(context),
@@ -126,7 +179,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                       Text(
                         "Products",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: Sizeresponsive.defaultSize! * 2.5,
                           fontWeight: FontWeight.bold,
                         ),
