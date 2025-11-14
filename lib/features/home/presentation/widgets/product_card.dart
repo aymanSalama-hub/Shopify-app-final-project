@@ -23,6 +23,7 @@ class ProductCard extends StatelessWidget {
 
     return Container(
       width: sw * 0.4,
+      margin: EdgeInsets.only(bottom: ds * 0.2),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(ds * 2),
@@ -106,8 +107,8 @@ class ProductCard extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Gap(ds * 0.25),
-
+                          Gap(ds * 0.70),
+                          //if (item.title.length < 20) ...[Gap(ds * 0.25)],
                           // Rating Row
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

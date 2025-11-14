@@ -85,7 +85,12 @@ class HomeScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage(),));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NotificationsPage(),
+                      ),
+                    );
                   },
                   icon: SvgPicture.asset(
                     AppImages.notificationSvg,

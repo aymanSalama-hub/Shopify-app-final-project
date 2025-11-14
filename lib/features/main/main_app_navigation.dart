@@ -81,11 +81,7 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
                 BlendMode.srcIn,
               ),
             )
-          : Icon(
-              icon!,
-              color: AppColors.primayColor,
-              blendMode: BlendMode.srcIn,
-            ),
+          : Icon(icon!, color: AppColors.primayColor),
       icon: path != null
           ? SvgPicture.asset(
               path,
@@ -94,7 +90,7 @@ class _MainAppNavigationScreenState extends State<MainAppNavigationScreen> {
 
               colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
             )
-          : Icon(icon!, color: Colors.grey, blendMode: BlendMode.srcIn),
+          : Icon(icon!, color: Colors.grey),
       label: label,
     );
   }

@@ -135,7 +135,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
               height:
                   kToolbarHeight +
                   MediaQuery.of(context).padding.top +
-                  Sizeresponsive.defaultSize! * 2,
+                  Sizeresponsive.defaultSize! * 0.3,
               padding: EdgeInsets.only(
                 top: MediaQuery.of(context).padding.top,
                 left: Sizeresponsive.defaultSize! * 2,
@@ -187,7 +187,7 @@ class _ProductGrideScreenState extends State<ProductGrideScreen> {
                       SizedBox(width: Sizeresponsive.defaultSize! * 6),
                     ],
                   ),
-                  SizedBox(height: Sizeresponsive.defaultSize! * 2),
+                  //SizedBox(height: Sizeresponsive.defaultSize! * 2),
                 ],
               ),
             ),

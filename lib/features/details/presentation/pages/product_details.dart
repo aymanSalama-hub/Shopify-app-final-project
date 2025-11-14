@@ -1,5 +1,6 @@
 // lib/features/details/presentation/pages/product_details_screen.dart
 import 'dart:math';
+
 import 'package:Shopify/core/routes/navigation.dart';
 import 'package:Shopify/core/routes/routs.dart';
 import 'package:Shopify/core/utils/app_colors.dart';
@@ -37,13 +38,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Future<void> _loadFav() async {
-    final state = await FavoriteManager.getFavoriteState(widget.product.id.toString());
+    final state = await FavoriteManager.getFavoriteState(
+      widget.product.id.toString(),
+    );
     if (mounted) setState(() => isFavorite = state);
   }
 
   Future<void> _toggleFav() async {
     final newVal = !isFavorite;
-    await FavoriteManager.setFavoriteState(widget.product.id.toString(), newVal);
+    await FavoriteManager.setFavoriteState(
+      widget.product.id.toString(),
+      newVal,
+    );
     if (mounted) setState(() => isFavorite = newVal);
     try {
       context.read<FavoritesCubit>().loadFavorites();
@@ -54,7 +60,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     bool isClothes =
         widget.product.category != null &&
-            widget.product.category!.toLowerCase().contains('clothing');
+        widget.product.category!.toLowerCase().contains('clothing');
 
     var cubit = context.read<AddcartCubit>();
 
@@ -62,7 +68,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       listener: (context, state) {
         if (state is AddCartSuccess) {
           pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${state.message}')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${state.message}')));
         } else if (state is AddCartFailure) {
           pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -86,14 +94,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       bottomRight: Radius.circular(30),
                     ),
                     child: Image.network(
-                      (widget.product.image != null && widget.product.image!.isNotEmpty)
+                      (widget.product.image != null &&
+                              widget.product.image!.isNotEmpty)
                           ? widget.product.image!
                           : "https://picsum.photos/200",
                       height: 300,
                       width: double.infinity,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return Image.asset('assets/images/notfound.png', fit: BoxFit.cover);
+                        return Image.asset(
+                          'assets/images/notfound.png',
+                          fit: BoxFit.cover,
+                        );
                       },
                     ),
                   ),
@@ -103,7 +115,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     child: CircleAvatar(
                       backgroundColor: AppColors.backgroundColorCart,
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back),
+                        icon: Icon(Icons.arrow_back, color: Colors.black),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
@@ -114,8 +126,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     child: CircleAvatar(
                       backgroundColor: AppColors.backgroundColorCart,
                       child: IconButton(
-                        icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : Colors.black),
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.black,
+                        ),
                         onPressed: _toggleFav,
                       ),
                     ),
@@ -147,10 +161,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 const Gap(10),
                                 Row(
                                   children: [
-                                    const Icon(Icons.star, color: Colors.amber, size: 20),
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 4),
-                                    Text(rating.toStringAsFixed(1),
-                                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    Text(
+                                      rating.toStringAsFixed(1),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const SizedBox(width: 4),
                                     Text("($reviews Reviews)"),
                                   ],
@@ -160,21 +182,42 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           Text(
                             "  \$${widget.product.price ?? 0}",
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                            ),
                           ),
                         ],
                       ),
                       const Gap(20),
-                      const Text('Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const Gap(10),
-                      Text(widget.product.description ?? 'NO Data', maxLines: 4, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.grey, height: 1.5)),
+                      Text(
+                        widget.product.description ?? 'NO Data',
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.grey, height: 1.5),
+                      ),
                       const Gap(20),
-                      const Text("Size", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text(
+                        "Size",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const Gap(10),
                       Row(
                         children: List.generate(
                           sizes.length,
-                              (index) => Padding(
+                          (index) => Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: Stack(
                               alignment: Alignment.center,
@@ -182,10 +225,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 GestureDetector(
                                   onTap: isClothes
                                       ? () {
-                                    setState(() {
-                                      selectedSize = index;
-                                    });
-                                  }
+                                          setState(() {
+                                            selectedSize = index;
+                                          });
+                                        }
                                       : null,
                                   child: Container(
                                     width: 50,
@@ -194,15 +237,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
-                                        color: isClothes && selectedSize == index ? Colors.deepPurple : Colors.grey.shade300,
+                                        color:
+                                            isClothes && selectedSize == index
+                                            ? Colors.deepPurple
+                                            : Colors.grey.shade300,
                                         width: 2,
                                       ),
-                                      color: selectedSize == index && isClothes ? Colors.deepPurple.withOpacity(0.1) : Colors.transparent,
+                                      color: selectedSize == index && isClothes
+                                          ? Colors.deepPurple.withOpacity(0.1)
+                                          : Colors.transparent,
                                     ),
-                                    child: Text(sizes[index], style: TextStyle(fontWeight: FontWeight.bold, color: isClothes ? (selectedSize == index ? Colors.deepPurple : Colors.black) : Colors.grey)),
+                                    child: Text(
+                                      sizes[index],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: isClothes
+                                            ? (selectedSize == index
+                                                  ? Colors.deepPurple
+                                                  : Colors.black)
+                                            : Colors.grey,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                if (!isClothes) Icon(Icons.lock, size: 18, color: Colors.grey.shade600),
+                                if (!isClothes)
+                                  Icon(
+                                    Icons.lock,
+                                    size: 18,
+                                    color: Colors.grey.shade600,
+                                  ),
                               ],
                             ),
                           ),
@@ -225,10 +288,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   height: 55,
                   child: ElevatedButton(
                     onPressed: () {
-                      cubit.toggleProductInCart(widget.product.id.toString(), widget.product);
+                      cubit.toggleProductInCart(
+                        widget.product.id.toString(),
+                        widget.product,
+                      );
                     },
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
-                    child: const Text("Add To Cart", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text(
+                      "Add To Cart",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -240,8 +318,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: Container(
                   height: 55,
                   width: 55,
-                  decoration: BoxDecoration(color: AppColors.whiteColor, borderRadius: BorderRadius.circular(30)),
-                  child: Center(child: SvgPicture.asset('assets/icons/lock.svg', color: AppColors.lightGrayColor, width: 24, height: 24)),
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Center(
+                    child: SvgPicture.asset(
+                      'assets/icons/lock.svg',
+                      color: AppColors.lightGrayColor,
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
                 ),
               ),
             ],
